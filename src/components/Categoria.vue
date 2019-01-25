@@ -25,7 +25,11 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs12 sm12 md12>
-                    <v-text-field v-model="categoria.nombre" label="Nombre" :error-messages="mensajeValidacion['Nombre']"></v-text-field>
+                    <v-text-field
+                      v-model="categoria.nombre"
+                      label="Nombre"
+                      :error-messages="mensajeValidacion['Nombre']"
+                    ></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm12 md12>
                     <v-text-field v-model="categoria.descripcion" label="Descripcion"></v-text-field>
@@ -41,6 +45,32 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <!--
+        <v-dialog v-model="modalActivarDesactivar" max-width="290">
+          <v-card>
+            <v-card-title class="headline" v-if="activar">¿Activar Item?</v-card-title>
+            <v-card-title class="headline" v-if="desactivar">¿Desactivar Item?</v-card-title>
+            <v-card-text>
+              Estás a punto de
+              <span v-if="activar">Activar</span>
+              <span v-if="desactivar">Desactivar</span>
+              el ítem {{ categoriaActivarDesactivar.nombre }}
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" flat="flat" @click="activarDesactivar(categoriaActivarDesactivar)">Cancelar</v-btn>
+              <v-btn v-if="adAccion==1" color="orange darken-4" flat="flat" @click="activar">Activar</v-btn>
+              <v-btn
+                v-if="adAccion==2"
+                color="orange darken-4"
+                flat="flat"
+                @click="desactivar"
+              >Desactivar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>-->
+
       </v-toolbar>
       <v-data-table
         :headers="headers"
@@ -51,8 +81,13 @@
       >
         <template slot="items" slot-scope="props">
           <td>
-            <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-            <v-icon small @click="deleteItem(props.item)">delete</v-icon>
+            <v-icon class="mr-2" @click="editItem(props.item)">edit</v-icon>
+            <template v-if="props.item.activo">
+              <v-icon color="info" @click="activarDesactivar(props.item)">toggle_off</v-icon>
+            </template>
+            <template v-else>
+              <v-icon @click="activarDesactivar(props.item)">toggle_on</v-icon>
+            </template>
           </td>
           <td>{{ props.item.nombre }}</td>
           <td>{{ props.item.descripcion }}</td>
@@ -60,8 +95,19 @@
             :class="{'indigo--text':props.item.activo, 'blue-grey--text':!props.item.activo}"
           >{{ props.item.activo ? 'Activo' : 'Inactivo' }}</td>
         </template>
+
         <template slot="no-data">
-          <v-btn color="primary" @click="initialize">Resetear</v-btn>
+          <div v-if="cargando" class="text-xs-center">
+            <p>Cargando...</p>
+          </div>
+          <div v-else-if="getError" class="text-xs-center">
+            <v-icon large color="error">error</v-icon>
+            <p>Ocurrió un error, revise su conexión e intente nuevamente</p>
+            <v-btn color="primary" title="recargar" @click="listar()">Reintentar
+              <v-icon small>refresh</v-icon>
+            </v-btn>
+          </div>
+          <div v-else class="text-xs-center">No se encontraron registros</div>
         </template>
       </v-data-table>
       <!--<v-btn
@@ -90,6 +136,7 @@ export default {
       dialog: false,
       cargando: false,
       guardando: false,
+      getError: false,
       headers: [
         { text: "Opciones", value: "opciones", sortable: false },
         { text: "Nombre", value: "nombre" },
@@ -105,21 +152,23 @@ export default {
         descripcion: ""
       },
       search: "",
-      mensajeValidacion: [],
+      mensajeValidacion: []
     };
   },
   methods: {
     listar() {
       this.cargando = true;
+      this.getError = false;
       this.$http
         .get(`${process.env.VUE_APP_ROOT_API}categorias`)
         .then(response => {
           this.categorias = response.data;
           this.cargando = false;
         })
-        .catch(function(error) {
+        .catch(error => {
           console.log(error);
           this.cargando = false;
+          this.getError = true;
         });
     },
     editItem(item) {
@@ -129,16 +178,26 @@ export default {
       this.dialog = true;
     },
 
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.desserts.splice(index, 1);
+    activarDesactivar(item) {
+      this.$http
+        .put(
+          `${process.env.VUE_APP_ROOT_API}categorias/${
+            item.activo ? "desactivar" : "activar"
+          }/${item.id}`
+        )
+        .then(() => {
+          item.activo = !item.activo;
+        })
+        .catch(error => {
+          console.log(error);
+          //TODO: Agregar snackbar para mostrar el error
+        });
     },
 
     close() {
       this.dialog = false;
       setTimeout(() => {
-        this.limpiar();  
+        this.limpiar();
       }, 300);
     },
     guardar() {
@@ -146,7 +205,10 @@ export default {
       if (this.id) {
         // Editar
         this.$http
-          .put(`${process.env.VUE_APP_ROOT_API}categorias/${this.id}`, this.categoria)
+          .put(
+            `${process.env.VUE_APP_ROOT_API}categorias/${this.id}`,
+            this.categoria
+          )
           .then(response => {
             this.guardando = false;
             this.close();
@@ -155,7 +217,8 @@ export default {
           })
           .catch(error => {
             this.guardando = false;
-            this.mensajeValidacion = error.response.data.errors 
+            // obtenemos el msj de error desde el servidor
+            this.mensajeValidacion = error.response.data.errors;
           });
       } else {
         // Guardar
@@ -169,7 +232,7 @@ export default {
           })
           .catch(error => {
             this.guardando = false;
-            this.mensajeValidacion = error.response.data.errors 
+            this.mensajeValidacion = error.response.data.errors;
           });
       }
     },
@@ -177,13 +240,11 @@ export default {
       this.categoria = Object.assign({}, this.categoriaDefault);
       this.mensajeValidacion = [];
       this.id = null;
-    },
+    }
   },
   computed: {
     formTitle() {
-      return this.id
-        ? "Nueva categoria"
-        : "Actualizar categoria";
+      return !this.id ? "Nueva categoria" : "Actualizar categoria";
     }
   },
 
