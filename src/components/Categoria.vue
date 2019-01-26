@@ -1,7 +1,7 @@
 <template>
   <v-layout align-start>
     <v-flex>
-      <v-toolbar flat color="white">
+      <v-toolbar flat color="white" >
         <v-toolbar-title>Categorías</v-toolbar-title>
         <v-divider class="mx-2" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -32,7 +32,7 @@
                     ></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm12 md12>
-                    <v-text-field v-model="categoria.descripcion" label="Descripcion"></v-text-field>
+                    <v-text-field v-model="categoria.descripcion" label="Descripción"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -45,32 +45,6 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-
-        <!--
-        <v-dialog v-model="modalActivarDesactivar" max-width="290">
-          <v-card>
-            <v-card-title class="headline" v-if="activar">¿Activar Item?</v-card-title>
-            <v-card-title class="headline" v-if="desactivar">¿Desactivar Item?</v-card-title>
-            <v-card-text>
-              Estás a punto de
-              <span v-if="activar">Activar</span>
-              <span v-if="desactivar">Desactivar</span>
-              el ítem {{ categoriaActivarDesactivar.nombre }}
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="green darken-1" flat="flat" @click="activarDesactivar(categoriaActivarDesactivar)">Cancelar</v-btn>
-              <v-btn v-if="adAccion==1" color="orange darken-4" flat="flat" @click="activar">Activar</v-btn>
-              <v-btn
-                v-if="adAccion==2"
-                color="orange darken-4"
-                flat="flat"
-                @click="desactivar"
-              >Desactivar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>-->
-
       </v-toolbar>
       <v-data-table
         :headers="headers"
@@ -101,8 +75,7 @@
             <p>Cargando...</p>
           </div>
           <div v-else-if="getError" class="text-xs-center">
-            <v-icon large color="error">error</v-icon>
-            <p>Ocurrió un error, revise su conexión e intente nuevamente</p>
+            <v-alert :value="getError" transition="scale-transition" type="error" outline>Ocurrió un error, verifique su conexión e intente nuevamente.</v-alert>
             <v-btn color="primary" title="recargar" @click="listar()">Reintentar
               <v-icon small>refresh</v-icon>
             </v-btn>
@@ -110,20 +83,14 @@
           <div v-else class="text-xs-center">No se encontraron registros</div>
         </template>
       </v-data-table>
-      <!--<v-btn
-        fixed
-        dark
-        fab
-        bottom
-        right
-        type="button"
-        title="Nuevo"
-        color="primary"
-        @click="dialog = true"
-      >
-        <v-icon>add</v-icon>
-      </v-btn>-->
     </v-flex>
+    <v-snackbar
+      :timeout="1500"
+      bottom
+      left
+      v-model="snackbar.visible"
+      :color="snackbar.color"
+    >{{snackbar.message}}</v-snackbar>
   </v-layout>
 </template>
 
@@ -140,7 +107,7 @@ export default {
       headers: [
         { text: "Opciones", value: "opciones", sortable: false },
         { text: "Nombre", value: "nombre" },
-        { text: "Descripcion", value: "descripcion", sortable: false },
+        { text: "Descripción", value: "descripcion", sortable: false },
         { text: "Estado", value: "activo" }
       ],
       categoria: {
@@ -152,7 +119,12 @@ export default {
         descripcion: ""
       },
       search: "",
-      mensajeValidacion: []
+      mensajeValidacion: [],
+      snackbar: {
+        visible: false,
+        message: null,
+        color: "info"
+      }
     };
   },
   methods: {
@@ -190,7 +162,9 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          //TODO: Agregar snackbar para mostrar el error
+          this.snackbar.color = "error";
+          this.snackbar.message = "Ocurrió un error, revise su conexión.";
+          this.snackbar.visible = true;
         });
     },
 
@@ -213,12 +187,16 @@ export default {
             this.guardando = false;
             this.close();
             this.listar();
-            this.limpiar();
           })
           .catch(error => {
             this.guardando = false;
-            // obtenemos el msj de error desde el servidor
-            this.mensajeValidacion = error.response.data.errors;
+            if (error.response) {
+              this.mensajeValidacion = error.response.data.errors;
+            } else {
+              this.snackbar.color = "error";
+              this.snackbar.message = "Ocurrió un error, revise su conexión.";
+              this.snackbar.visible = true;
+            }
           });
       } else {
         // Guardar
@@ -228,11 +206,16 @@ export default {
             this.guardando = false;
             this.close();
             this.listar();
-            this.limpiar();
           })
           .catch(error => {
             this.guardando = false;
-            this.mensajeValidacion = error.response.data.errors;
+            if (error.response) {
+              this.mensajeValidacion = error.response.data.errors;
+            } else {
+              this.snackbar.color = "error";
+              this.snackbar.message = "Ocurrió un error, revise su conexión.";
+              this.snackbar.visible = true;
+            }
           });
       }
     },
@@ -244,7 +227,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return !this.id ? "Nueva categoria" : "Actualizar categoria";
+      return !this.id ? "Nueva categoría" : "Actualizar categoría";
     }
   },
 
