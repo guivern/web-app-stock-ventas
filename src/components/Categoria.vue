@@ -1,7 +1,7 @@
 <template>
   <v-layout align-start>
     <v-flex>
-      <v-toolbar flat color="white" >
+      <v-toolbar flat color="white">
         <v-toolbar-title>Categorías</v-toolbar-title>
         <v-divider class="mx-2" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -15,13 +15,16 @@
         ></v-text-field>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
-          <v-btn slot="activator" color="primary" dark class="mb-2">Nuevo</v-btn>
+          <v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn>
           <v-card>
-            <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
-            </v-card-title>
-
-            <v-card-text>
+            <v-toolbar flat dark class="info">
+              <v-toolbar-title>
+                <span class="headline">{{ formTitle() }}</span>
+              </v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-divider></v-divider>
+            <v-card-text v-on:keyup.enter="guardar">
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs12 sm12 md12>
@@ -40,8 +43,15 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click="close">Cancelar</v-btn>
-              <v-btn color="blue darken-1" flat @click="guardar" :loading="guardando">Guardar</v-btn>
+              <v-btn flat color="error" @click="close" round :disabled="guardando">Cancelar</v-btn>
+              <v-btn
+                flat
+                round
+                color="primary"
+                @click="guardar"
+                :loading="guardando"
+                :disabled="guardando"
+              >Guardar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -75,7 +85,12 @@
             <p>Cargando...</p>
           </div>
           <div v-else-if="getError" class="text-xs-center">
-            <v-alert :value="getError" transition="scale-transition" type="error" outline>Ocurrió un error, verifique su conexión e intente nuevamente.</v-alert>
+            <v-alert
+              :value="getError"
+              transition="scale-transition"
+              type="error"
+              outline
+            >Ocurrió un error, verifique su conexión e intente nuevamente.</v-alert>
             <v-btn color="primary" title="recargar" @click="listar()">Reintentar
               <v-icon small>refresh</v-icon>
             </v-btn>
@@ -98,7 +113,6 @@
 export default {
   data() {
     return {
-      id: null,
       categorias: [],
       dialog: false,
       cargando: false,
@@ -111,6 +125,7 @@ export default {
         { text: "Estado", value: "activo" }
       ],
       categoria: {
+        id: null,
         nombre: "",
         descripcion: ""
       },
@@ -132,7 +147,7 @@ export default {
       this.cargando = true;
       this.getError = false;
       this.$http
-        .get(`${process.env.VUE_APP_ROOT_API}categorias`)
+        .get(`${process.env.VUE_APP_ROOT_API}categorias?todos=true`)
         .then(response => {
           this.categorias = response.data;
           this.cargando = false;
@@ -144,7 +159,7 @@ export default {
         });
     },
     editItem(item) {
-      this.id = item.id;
+      this.categoria.id = item.id;
       this.categoria.nombre = item.nombre;
       this.categoria.descripcion = item.descripcion;
       this.dialog = true;
@@ -176,11 +191,11 @@ export default {
     },
     guardar() {
       this.guardando = true;
-      if (this.id) {
+      if (this.categoria.id) {
         // Editar
         this.$http
           .put(
-            `${process.env.VUE_APP_ROOT_API}categorias/${this.id}`,
+            `${process.env.VUE_APP_ROOT_API}categorias/${this.categoria.id}`,
             this.categoria
           )
           .then(response => {
@@ -222,14 +237,12 @@ export default {
     limpiar() {
       this.categoria = Object.assign({}, this.categoriaDefault);
       this.mensajeValidacion = [];
-      this.id = null;
-    }
-  },
-  computed: {
+    },
     formTitle() {
-      return !this.id ? "Nueva categoría" : "Actualizar categoría";
+      return !this.categoria.id ? "Nueva categoría" : "Actualizar categoría";
     }
   },
+  computed: {},
 
   watch: {
     dialog(val) {
