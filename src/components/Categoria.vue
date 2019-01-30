@@ -147,7 +147,7 @@ export default {
       this.cargando = true;
       this.getError = false;
       this.$http
-        .get(`${process.env.VUE_APP_ROOT_API}categorias?todos=true`)
+        .get(`${process.env.VUE_APP_ROOT_API}categorias?Inactivos=true`)
         .then(response => {
           this.categorias = response.data;
           this.cargando = false;
