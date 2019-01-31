@@ -90,8 +90,8 @@
               transition="scale-transition"
               type="error"
               outline
-            >Ocurrió un error, verifique su conexión e intente nuevamente.</v-alert>
-            <v-btn color="primary" title="recargar" @click="listar()">Reintentar
+            >Ocurrió un error al intentar obtener los datos, por favor verifique su conexión e intente nuevamente.</v-alert>
+            <v-btn color="info" title="recargar" @click="listar()">Reintentar
               <v-icon small>refresh</v-icon>
             </v-btn>
           </div>
@@ -127,11 +127,14 @@ export default {
       categoria: {
         id: null,
         nombre: "",
-        descripcion: ""
+        descripcion: "",
+        activo: true
       },
       categoriaDefault: {
+        id: null,
         nombre: "",
-        descripcion: ""
+        descripcion: "",
+        activo: true
       },
       search: "",
       mensajeValidacion: [],
@@ -159,9 +162,7 @@ export default {
         });
     },
     editItem(item) {
-      this.categoria.id = item.id;
-      this.categoria.nombre = item.nombre;
-      this.categoria.descripcion = item.descripcion;
+      this.categoria = Object.assign({},item);
       this.dialog = true;
     },
 
