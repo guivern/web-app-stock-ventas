@@ -170,7 +170,7 @@ export default {
       matchError: false,
       headers: [
         { text: "Opciones", value: "opciones", sortable: false },
-        { text: "Username", value: "username", sortable: false },
+        { text: "Username", value: "username" },
         { text: "Rol", value: "rol" },
         { text: "Nombre", value: "nombre" },
         { text: "Apellido", value: "apellido" },
