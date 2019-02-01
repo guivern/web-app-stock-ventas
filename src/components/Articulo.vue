@@ -14,8 +14,8 @@
           hide-details
         ></v-text-field>
         <v-spacer></v-spacer>
-        
-        <v-dialog v-model="dialog" max-width="500px">  
+
+        <v-dialog v-model="dialog" max-width="500px">
           <v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn>
           <v-card>
             <v-toolbar flat dark class="info">
@@ -97,6 +97,8 @@
         class="elevation-1"
         :search="search"
         :loading="cargando"
+        :rows-per-page-items="rowsPerPageItems"
+        :pagination.sync="pagination"
       >
         <template slot="items" slot-scope="props">
           <td>
@@ -194,6 +196,10 @@ export default {
         visible: false,
         message: null,
         color: "info"
+      },
+      rowsPerPageItems: [15, 25, 35, 45],
+      pagination: {
+        rowsPerPage: 15
       }
     };
   },
@@ -213,7 +219,7 @@ export default {
           this.getError = true;
         });
     },
-    getCategorias(){
+    getCategorias() {
       this.cargando = true;
       this.getError = false;
       this.$http
