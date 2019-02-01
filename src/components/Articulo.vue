@@ -197,9 +197,9 @@ export default {
         message: null,
         color: "info"
       },
-      rowsPerPageItems: [15, 25, 35, 45],
+      rowsPerPageItems: [10, 20, 30, 40],
       pagination: {
-        rowsPerPage: 15
+        rowsPerPage: 10
       }
     };
   },
