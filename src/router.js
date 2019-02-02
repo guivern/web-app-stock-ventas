@@ -5,6 +5,7 @@ import Categoria from './components/Categoria.vue'
 import Articulo from './components/Articulo.vue'
 import Rol from './components/Rol.vue'
 import Usuario from './components/Usuario.vue'
+import Cliente from './components/Cliente.vue'
 
 Vue.use(Router)
 
@@ -36,6 +37,11 @@ export default new Router({
       path: '/usuarios',
       name: 'usuarios',
       component: Usuario
+    },
+    {
+      path: '/clientes',
+      name: 'clientes',
+      component: Cliente
     },
 
   ]
