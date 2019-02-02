@@ -165,7 +165,7 @@ export default {
         { text: "Nombres", value: "nombre" },
         { text: "Apellidos", value: "apellido" },
         { text: "Tipo Documento", value: "tipoDocumento", sortable: false },
-        { text: "Nro. Documento", value: "nroDocumento", sortable:false },
+        { text: "Nro. Documento", value: "numeroDocumento", sortable:false },
         { text: "Direccion", value: "direccion", sortable: false },
         { text: "Telefono", value: "telefono", sortable: false },
         { text: "Email", value: "email", sortable: false }
