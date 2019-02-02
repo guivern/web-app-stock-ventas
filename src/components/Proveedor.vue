@@ -2,7 +2,7 @@
   <v-layout align-start>
     <v-flex>
       <v-toolbar flat color="white">
-        <v-toolbar-title>Clientes</v-toolbar-title>
+        <v-toolbar-title>Proveedores</v-toolbar-title>
         <v-divider class="mx-2" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-text-field
@@ -28,23 +28,16 @@
             <v-card-text v-on:keyup.enter="guardar">
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <v-flex xs6 sm6 md6>
+                  <v-flex xs12 sm12 md12>
                     <v-text-field
-                      v-model="cliente.nombre"
-                      label="Nombres"
-                      :error-messages="mensajeValidacion['Nombre']"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs6 sm6 md6>
-                    <v-text-field
-                      v-model="cliente.apellido"
-                      label="Apellidos"
-                      :error-messages="mensajeValidacion['Apellido']"
+                      v-model="proveedor.razonSocial"
+                      label="Razon Social"
+                      :error-messages="mensajeValidacion['RazonSocial']"
                     ></v-text-field>
                   </v-flex>
                   <v-flex xs6 sm6 md6>
                     <v-select
-                      v-model="cliente.tipoDocumento"
+                      v-model="proveedor.tipoDocumento"
                       :items="tiposDocumentos"
                       label="Tipo Documento"
                       :loading="cargando"
@@ -53,21 +46,21 @@
                   </v-flex>
                   <v-flex xs6 sm6 md6>
                     <v-text-field
-                      v-model="cliente.numeroDocumento"
+                      v-model="proveedor.nroDocumento"
                       label="Nro. Documento"
-                      :error-messages="mensajeValidacion['NumeroDocumento']"
+                      :error-messages="mensajeValidacion['NroDocumento']"
                     ></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm12 md12>
                     <v-text-field
-                      v-model="cliente.direccion"
+                      v-model="proveedor.direccion"
                       label="Direccion"
                       :error-messages="mensajeValidacion['Direccion']"
                     ></v-text-field>
                   </v-flex>
                   <v-flex xs6 sm6 md6>
                     <v-text-field
-                      v-model="cliente.telefono"
+                      v-model="proveedor.telefono"
                       label="Telefono"
                       :error-messages="mensajeValidacion['Telefono']"
                     ></v-text-field>
@@ -75,7 +68,7 @@
                   <v-flex xs6 sm6 md6>
                     <v-text-field
                       type="email"
-                      v-model="cliente.email"
+                      v-model="proveedor.email"
                       label="Email"
                       :error-messages="mensajeValidacion['Email']"
                     ></v-text-field>
@@ -101,7 +94,7 @@
       </v-toolbar>
       <v-data-table
         :headers="headers"
-        :items="clientes"
+        :items="proveedores"
         class="elevation-1"
         :search="search"
         :loading="cargando"
@@ -110,10 +103,9 @@
          <td>
             <v-icon class="mr-2" @click="editItem(props.item)">edit</v-icon>
          </td>
-          <td>{{ props.item.nombre }}</td>
-          <td>{{ props.item.apellido }}</td>
+          <td>{{ props.item.razonSocial }}</td>
           <td>{{ props.item.tipoDocumento }}</td>
-          <td>{{ props.item.numeroDocumento }}</td>
+          <td>{{ props.item.nroDocumento }}</td>
           <td>{{ culumnNullable(props.item.direccion) }}</td>
           <td>{{ culumnNullable(props.item.telefono) }}</td>
           <td>{{ culumnNullable(props.item.email) }}</td>
@@ -154,7 +146,7 @@ export default {
   mixins: [columnasMixin],
   data() {
     return {
-      clientes: [],
+      proveedores: [],
       tiposDocumentos: [],
       dialog: false,
       cargando: false,
@@ -162,30 +154,27 @@ export default {
       getError: false,
       headers: [
         { text: "Opciones", value: "opciones", sortable: false },
-        { text: "Nombres", value: "nombre" },
-        { text: "Apellidos", value: "apellido" },
+        { text: "Razon Social", value: "razonSocial" },
         { text: "Tipo Documento", value: "tipoDocumento", sortable: false },
-        { text: "Nro. Documento", value: "numeroDocumento", sortable:false },
+        { text: "Nro. Documento", value: "nroDocumento", sortable:false },
         { text: "Direccion", value: "direccion", sortable: false },
         { text: "Telefono", value: "telefono", sortable: false },
         { text: "Email", value: "email", sortable: false }
       ],
-      cliente: {
+      proveedor: {
         id: null,
-        Nombre: null,
-        apellido: null,
+        razonSocial: null,
         tipoDocumento: null,
-        numeroDocumento: null,
+        nroDocumento: null,
         direccion: null,
         telefono: null,
         email: null
       },
-      clienteDefault: {
+      proveedorDefault: {
         id: null,
-        Nombre: null,
-        apellido: null,
+        razonSocial: null,
         tipoDocumento: null,
-        numeroDocumento: null,
+        nroDocumento: null,
         direccion: null,
         telefono: null,
         email: null
@@ -204,9 +193,9 @@ export default {
       this.cargando = true;
       this.getError = false;
       this.$http
-        .get(`${process.env.VUE_APP_ROOT_API}clientes?Inactivos=true`)
+        .get(`${process.env.VUE_APP_ROOT_API}proveedores?Inactivos=true`)
         .then(response => {
-          this.clientes = response.data;
+          this.proveedores = response.data;
           this.cargando = false;
         })
         .catch(error => {
@@ -215,7 +204,7 @@ export default {
           this.getError = true;
         });
     },
-    getClientes() {
+    getproveedores() {
       this.cargando = true;
       this.getError = false;
       this.$http
@@ -231,7 +220,7 @@ export default {
         });
     },
     editItem(item) {
-      this.cliente = Object.assign({}, item);
+      this.proveedor = Object.assign({}, item);
       this.dialog = true;
     },
 
@@ -243,12 +232,12 @@ export default {
     },
     guardar() {
       this.guardando = true;
-      if (this.cliente.id) {
+      if (this.proveedor.id) {
         // Editar
         this.$http
           .put(
-            `${process.env.VUE_APP_ROOT_API}clientes/${this.cliente.id}`,
-            this.cliente
+            `${process.env.VUE_APP_ROOT_API}proveedores/${this.proveedor.id}`,
+            this.proveedor
           )
           .then(response => {
             this.guardando = false;
@@ -268,7 +257,7 @@ export default {
       } else {
         // Guardar
         this.$http
-          .post(`${process.env.VUE_APP_ROOT_API}clientes`, this.cliente)
+          .post(`${process.env.VUE_APP_ROOT_API}proveedores`, this.proveedor)
           .then(response => {
             this.guardando = false;
             this.close();
@@ -287,12 +276,12 @@ export default {
       }
     },
     limpiar() {
-      this.cliente = Object.assign({}, this.clienteDefault);
+      this.proveedor = Object.assign({}, this.proveedorDefault);
       this.mensajeValidacion = [];
       this.matchError = false;
     },
     formTitle() {
-      return !this.cliente.id ? "Nuevo cliente" : "Actualizar cliente";
+      return !this.proveedor.id ? "Nuevo proveedor" : "Actualizar proveedor";
     },
   },
   computed: {},
@@ -305,7 +294,7 @@ export default {
 
   created() {
     this.listar();
-    this.getClientes();
+    this.getproveedores();
   }
 };
 </script>
