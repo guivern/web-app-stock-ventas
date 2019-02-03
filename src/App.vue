@@ -3,21 +3,20 @@
     <v-navigation-drawer
       :clipped="$vuetify.breakpoint.lgAndUp"
       v-model="drawer"
+      v-if="logueado"
       fixed
       app
     >
       <v-list dense>
-        <template>
+        <template v-if="esAdministrador || esAlmacenero || esVendedor">
           <v-list-tile :to="{name: 'home'}">
             <v-list-tile-action>
               <v-icon>home</v-icon>
             </v-list-tile-action>
-            <v-list-tile-title>
-              Inicio
-            </v-list-tile-title>
+            <v-list-tile-title>Inicio</v-list-tile-title>
           </v-list-tile>
         </template>
-        <template>
+        <template v-if="esAdministrador || esAlmacenero">
           <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -42,7 +41,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador || esAlmacenero">
           <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -67,7 +66,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador || esVendedor">
           <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -92,7 +91,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador">
           <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -117,7 +116,7 @@
             </v-list-tile>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador">
           <v-list-group>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -144,20 +143,14 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
-      color="blue darken-3"
-      dark
-      app
-      fixed
-    >
+    <v-toolbar :clipped-left="$vuetify.breakpoint.lgAndUp" color="blue darken-3" dark app fixed>
       <v-toolbar-title style="width: 300px" class="ml-0 pl-3">
-        <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+        <v-toolbar-side-icon v-show="logueado" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <span class="hidden-sm-and-down">Sistema</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>apps</v-icon>
+      <v-btn v-if="logueado" icon>
+        <v-icon @click="salir">logout</v-icon>
       </v-btn>
     </v-toolbar>
     <v-content>
@@ -170,13 +163,42 @@
   </v-app>
 </template>
 <script>
-
 export default {
-  name: 'App',
-  data () {
+  name: "App",
+  data() {
     return {
-      drawer: null,
+      drawer: null
+    };
+  },
+  computed: {
+    logueado() {
+      return this.$store.state.usuario;
+    },
+    esAdministrador() {
+      return (
+        this.$store.state.usuario &&
+        this.$store.state.usuario.rol == "Administrador"
+      );
+    },
+    esAlmacenero() {
+      return (
+        this.$store.state.usuario &&
+        this.$store.state.usuario.rol == "Almacenero"
+      );
+    },
+    esVendedor() {
+      return (
+        this.$store.state.usuario && this.$store.state.usuario.rol == "Vendedor"
+      );
+    }
+  },
+  created() {
+    this.$store.dispatch("autoLogin");
+  },
+  methods: {
+    salir() {
+      this.$store.dispatch("salir");
     }
   }
-}
+};
 </script>
