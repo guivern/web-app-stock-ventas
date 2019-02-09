@@ -48,7 +48,7 @@
                 <v-list-tile-title>Compras</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile :to="{name: ''}">
+            <v-list-tile :to="'/ingresos'">
               <v-list-tile-action>
                 <v-icon>table_chart</v-icon>
               </v-list-tile-action>
@@ -144,7 +144,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-toolbar :clipped-left="$vuetify.breakpoint.lgAndUp" color="blue darken-3" dark app fixed>
-      <v-toolbar-title style="width: 300px" class="ml-0 pl-3">
+      <v-toolbar-title style="width: 300px" class="ml-0 pl-3" >
         <v-toolbar-side-icon v-show="logueado" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <span class="hidden-sm-and-down">Sistema</span>
       </v-toolbar-title>
