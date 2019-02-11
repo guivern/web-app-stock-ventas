@@ -20,7 +20,11 @@ export default {
     },
     columnMoney(val) {
       val = val.toFixed(0);
-      return new Intl.NumberFormat(["ban", "id"]).format(val);
+      return new Intl.NumberFormat(["ban", "id"]).format(val) + ' Gs.';
+    },
+
+    columnIva(val){
+      return 'IVA ' + val + '%';
     }
   }
 };

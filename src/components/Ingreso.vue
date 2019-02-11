@@ -25,12 +25,19 @@
         >
           <template slot="items" slot-scope="props">
             <td>
-              <v-icon @click="editItem(props.item)">edit</v-icon>
+              <v-icon
+                @click="$router.push({path: '/ingresos/' + props.item.id, append: true})"
+                title="ver detalle"
+                @mouseover="e => e.target.classList.toggle('indigo--text')"
+                @mouseleave="e => e.target.classList.remove('indigo--text')"
+              >visibility</v-icon>
               <template v-if="props.item.estado == 'Aceptado'">
-                <v-icon color="info" @click="activarDesactivar(props.item)">toggle_off</v-icon>
-              </template>
-              <template v-else>
-                <v-icon @click="activarDesactivar(props.item)">toggle_on</v-icon>
+                <v-icon
+                  @click="anular(props.item)"
+                  title="anular"
+                  @mouseover="e => e.target.classList.toggle('indigo--text')"
+                  @mouseleave="e => e.target.classList.remove('indigo--text')"
+                >block</v-icon>
               </template>
             </td>
             <td>{{ props.item.nombreUsuario }}</td>
@@ -38,11 +45,11 @@
             <td>{{ props.item.tipoComprobante }}</td>
             <td>{{ props.item.nroComprobante }}</td>
             <td>{{ columnDate(props.item.fechaHora) }}</td>
-            <td class="text-xs-right">{{ columnMoney(props.item.impuesto) }}</td>
+            <td>{{ columnIva(props.item.impuesto) }}</td>
             <td class="text-xs-right">{{ columnMoney(props.item.total) }}</td>
-            <!--<td
-            :class="{'indigo--text':props.item.estado == 'Aceptado', 'blue-grey--text':!props.item.estado == 'Aceptado'}"
-            >{{ props.item.estado == 'Aceptado' ? 'Aceptado' : props.item.estado }}</td>-->
+            <td
+              :class="{'indigo--text':props.item.estado == 'Aceptado', 'red--text':props.item.estado !== 'Aceptado'}"
+            >{{ props.item.estado == 'Aceptado' ? 'Aceptado' : props.item.estado }}</td>
           </template>
 
           <template slot="no-data">
@@ -78,6 +85,10 @@
     >
       <v-icon>add</v-icon>
     </v-btn>
+    <v-snackbar :timeout="2000" v-model="snackbar.visible" :color="snackbar.color">
+      {{snackbar.message}}
+      <v-icon>{{snackbar.icon}}</v-icon>
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -99,9 +110,15 @@ export default {
         { text: "Nro. Comprobante", value: "nroComprobante", sortable: false },
         { text: "Fecha", value: "fechaHora" },
         { text: "Impuesto", value: "impuesto", sortable: false },
-        { text: "Total", value: "total", sortable: false }
-        //{ text: "Estado", value: "estado", sortable: false }
-      ]
+        { text: "Total", value: "total", sortable: false },
+        { text: "Estado", value: "estado", sortable: false }
+      ],
+      snackbar: {
+        visible: false,
+        message: null,
+        color: "",
+        icon: ""
+      },
     };
   },
   methods: {
@@ -120,15 +137,17 @@ export default {
           this.getError = true;
         });
     },
-    activarDesactivar(item) {
+    anular(item) {
       this.$http
         .put(
-          `${process.env.VUE_APP_ROOT_API}ingresos/${
-            item.activo ? "desactivar" : "activar"
-          }/${item.id}`
+          `${process.env.VUE_APP_ROOT_API}ingresos/anular/${item.id}`
         )
         .then(() => {
-          item.activo = !item.activo;
+          this.snackbar.icon = "info";
+          this.snackbar.color = "success";
+          this.snackbar.message = "Ingreso anulado";
+          this.snackbar.visible = true;
+          this.listar();
         })
         .catch(error => {
           console.log(error);

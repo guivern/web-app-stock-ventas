@@ -48,15 +48,18 @@ var router = new Router({
     },
 
     {
-      path: '/ingresos', component: {
+      path: '/ingresos',
+      component: {
         render(c) {
           return c('router-view')
         }
       },
       children: [
         { path: '', component: Ingreso, meta: { administrador: true, almacenero: true } },
-        { path: 'nuevo', component: IngresoForm, meta: { administrador: true, almacenero: true } },
+        { path: 'nuevo', component: IngresoForm, meta: { administrador: true, almacenero: true }, props:{titulo:"Ingreso de Artículos"} },
         //{ path: ':id', component: IngresoForm, meta: { administrador: true, almacenero: true } },
+        { path: ':id', component: IngresoForm, props: (route) => ({ id: parseInt(route.params.id), titulo: "Detalle de Ingreso" }), meta: { administrador: true, almacenero: true } }
+
       ],
     },
 
