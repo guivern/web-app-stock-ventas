@@ -15,7 +15,6 @@ import IngresoForm from "./components/IngresoForm.vue";
 Vue.use(Router);
 
 var router = new Router({
-  mode: "history",
   base: process.env.BASE_URL,
   routes: [
     {

@@ -134,7 +134,7 @@
                         <div class="text-xs-center">No hay artículos agregados al detalle.</div>
                       </template>
                     </v-data-table>
-                    <div v-if="ingreso.detalles.length > 0" style="margin:30px 15px">
+                    <div v-if="ingreso.detalles.length > 0" style="margin:20px 15px">
                       <tr>
                         <td>
                           <b>Total Parcial:</b>
@@ -245,7 +245,7 @@ export default {
         message: null,
         color: "info",
         icon: ""
-      }
+      },
     };
   },
   methods: {
@@ -278,7 +278,6 @@ export default {
         });
     },
     getProveedores() {
-      this.cargando = true;
       this.getError = false;
       this.$http
         .get(`${process.env.VUE_APP_ROOT_API}proveedores`)

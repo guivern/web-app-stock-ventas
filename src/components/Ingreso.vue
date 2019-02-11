@@ -13,6 +13,7 @@
             label="Búsqueda"
             single-line
             hide-details
+            @keyup="searchTimeOut()"
           ></v-text-field>
           <v-spacer></v-spacer>
         </v-toolbar>
@@ -20,16 +21,16 @@
           :headers="headers"
           :items="ingresos"
           class="elevation-1"
-          :search="search"
           :loading="cargando"
+          :rows-per-page-items="rowsPerPageItems"
+          :pagination.sync="pagination"
         >
           <template slot="items" slot-scope="props">
             <td>
               <v-icon
                 @click="$router.push({path: '/ingresos/' + props.item.id, append: true})"
                 title="ver detalle"
-                @mouseover="e => e.target.classList.toggle('indigo--text')"
-                @mouseleave="e => e.target.classList.remove('indigo--text')"
+                class="icon"
               >visibility</v-icon>
               <template v-if="props.item.estado == 'Aceptado'">
                 <v-icon
@@ -119,14 +120,21 @@ export default {
         color: "",
         icon: ""
       },
+      timer: null,
+      rowsPerPageItems: [10, 20, 30],
+      pagination: {
+        rowsPerPage: 10
+      }
     };
   },
   methods: {
     listar() {
+      var url =
+        "ingresos" + (this.search ? "/search?filtro=" + this.search : "");
       this.cargando = true;
       this.getError = false;
       this.$http
-        .get(`${process.env.VUE_APP_ROOT_API}ingresos`)
+        .get(`${process.env.VUE_APP_ROOT_API}${url}`)
         .then(response => {
           this.ingresos = response.data;
           this.cargando = false;
@@ -137,11 +145,18 @@ export default {
           this.getError = true;
         });
     },
+    searchTimeOut() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        this.listar();
+      }, 800);
+    },
     anular(item) {
       this.$http
-        .put(
-          `${process.env.VUE_APP_ROOT_API}ingresos/anular/${item.id}`
-        )
+        .put(`${process.env.VUE_APP_ROOT_API}ingresos/anular/${item.id}`)
         .then(() => {
           this.snackbar.icon = "info";
           this.snackbar.color = "success";
@@ -167,4 +182,10 @@ export default {
 };
 </script>
 <style scoped>
+.icon:hover {
+  color: indigo;
+}
+.icon {
+  color: grey;
+}
 </style>
