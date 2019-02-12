@@ -30,133 +30,135 @@
         <template v-if="!cargando && !getError">
           <v-card>
             <v-card-text>
-              <v-container grid-list-sm class="pa-4 white">
-                <v-layout row wrap>
-                  <v-flex xs12 sm6 md6 lg6 x6>
-                    <v-select
-                      :readonly="soloLectura"
-                      v-model="ingreso.tipoComprobante"
-                      :items="tiposComprobantes"
-                      label="Tipo Comprobante"
-                      :error-messages="mensajeValidacion['TipoComprobante']"
-                    ></v-select>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6 lg6 x6>
-                    <v-text-field
-                      :readonly="soloLectura"
-                      v-model="ingreso.nroComprobante"
-                      label="Nro. Comprobante"
-                      :error-messages="mensajeValidacion['NroComprobante']"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6 lg6 x6>
-                    <v-select
-                      :readonly="soloLectura"
-                      v-model="ingreso.idProveedor"
-                      :items="proveedores"
-                      item-text="razonSocial"
-                      item-value="id"
-                      label="Proveedor"
-                      :error-messages="mensajeValidacion['IdProveedor']"
-                    ></v-select>
-                  </v-flex>
-                  <v-flex xs12 sm6 md6 lg6 x6>
-                    <!--<v-text-field type="number" v-model="ingreso.impuesto" label="Impuesto"></v-text-field>-->
-                    <v-select
-                      :readonly="soloLectura"
-                      :items="impuestos"
-                      item-text="descripcion"
-                      item-value="value"
-                      v-model="ingreso.impuesto"
-                      label="Impuesto"
-                      :error-messages="mensajeValidacion['Impuesto']"
-                    ></v-select>
-                  </v-flex>
-                  <v-flex xs8 sm6 md6 lg6 x6>
-                    <v-text-field
-                      v-if="!soloLectura"
-                      id="buscadorCodigo"
-                      v-model="codigo"
-                      label="Código"
-                      @keyup.enter="buscarArticulo()"
-                      :loading="buscando"
-                      append-icon="search"
-                      :autofocus="focusBuscador"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs4 sm6 md6 lg6 x6>
-                    <v-btn small fab dark color="teal" v-if="!soloLectura">
-                      <v-icon dark @click="activarBusqueda = true">list</v-icon>
-                    </v-btn>
-                  </v-flex>
-                  <buscar-articulos v-model="activarBusqueda" @getArticulo="agregarDetalle"></buscar-articulos>
-                </v-layout>
-              </v-container>
+              <v-layout row wrap>
+                <v-flex xs12 sm6 md6 lg6 x6>
+                  <v-select
+                    :readonly="soloLectura"
+                    v-model="ingreso.tipoComprobante"
+                    :items="tiposComprobantes"
+                    label="Tipo Comprobante"
+                    :error-messages="mensajeValidacion['TipoComprobante']"
+                    class="mx-3"
+                  ></v-select>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex xs12 sm6 md6 lg6 x6>
+                  <v-text-field
+                    :readonly="soloLectura"
+                    v-model="ingreso.nroComprobante"
+                    label="Nro. Comprobante"
+                    :error-messages="mensajeValidacion['NroComprobante']"
+                    class="mx-3"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md6 lg6 x6>
+                  <v-select
+                    :readonly="soloLectura"
+                    v-model="ingreso.idProveedor"
+                    :items="proveedores"
+                    item-text="razonSocial"
+                    item-value="id"
+                    label="Proveedor"
+                    :error-messages="mensajeValidacion['IdProveedor']"
+                    class="mx-3"
+                  ></v-select>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex xs12 sm6 md6 lg6 x6>
+                  <v-select
+                    :readonly="soloLectura"
+                    :items="impuestos"
+                    item-text="descripcion"
+                    item-value="value"
+                    v-model="ingreso.impuesto"
+                    label="Impuesto"
+                    :error-messages="mensajeValidacion['Impuesto']"
+                    class="mx-3"
+                  ></v-select>
+                </v-flex>
+                <v-flex xs8 sm6 md6 lg6 x6>
+                  <v-text-field
+                    v-if="!soloLectura"
+                    id="buscadorCodigo"
+                    v-model="codigo"
+                    label="Código"
+                    @keyup.enter="buscarArticulo()"
+                    :loading="buscando"
+                    append-icon="search"
+                    :autofocus="focusBuscador"
+                    class="mx-3"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs4 sm5 md5 lg5 x5>
+                  <v-btn small fab dark color="teal" v-if="!soloLectura">
+                    <v-icon dark @click="activarBusqueda = true">list</v-icon>
+                  </v-btn>
+                </v-flex>
+                <buscar-articulos v-model="activarBusqueda" @getArticulo="agregarDetalle"></buscar-articulos>
+              </v-layout>
             </v-card-text>
           </v-card>
           <v-card>
             <v-card-text>
-              <v-container grid-list-sm class="pa-4 white">
-                <v-layout row wrap>
-                  <v-flex>
-                    <v-data-table
-                      :headers="headers"
-                      :items="ingreso.detalles"
-                      hide-actions
-                      class="elevation-1"
-                    >
-                      <template slot="items" slot-scope="props">
-                        <td class="justify-center layout px-0">
-                          <v-icon @click="eliminarDetalle(props.item)">delete</v-icon>
-                        </td>
-                        <td>{{ props.item.nombre }}</td>
-                        <td>
-                          <v-text-field
-                            :readonly="soloLectura"
-                            type="number"
-                            :autofocus="focusDetalle"
-                            v-model="props.item.cantidad"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-text-field
-                            :readonly="soloLectura"
-                            type="number"
-                            v-model="props.item.precio"
-                            @keyup.enter="nuevoDetalle()"
-                          ></v-text-field>
-                        </td>
-                        <td
-                          class="text-xs-right"
-                        >{{columnMoney(props.item.cantidad * props.item.precio)}}</td>
-                      </template>
-                      <template slot="no-data">
-                        <div class="text-xs-center">No hay artículos agregados al detalle.</div>
-                      </template>
-                    </v-data-table>
-                    <div v-if="ingreso.detalles.length > 0" style="margin:20px 15px">
-                      <tr>
-                        <td>
-                          <b>Total Parcial:</b>
-                        </td>
-                        <td class="text-xs-right">{{columnMoney(calcularTotal - calcularImpuesto)}}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <b>Total Impuesto:</b>
-                        </td>
-                        <td class="text-xs-right">{{columnMoney(calcularImpuesto)}}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <b>Total Neto:</b>
-                        </td>
-                        <td class="text-xs-right">{{columnMoney(calcularTotal)}}</td>
-                      </tr>
-                    </div>
-                  </v-flex>
-                </v-layout>
-              </v-container>
+              <v-layout row wrap class="mx-3">
+                <v-flex>
+                  <v-data-table
+                    :headers="headers"
+                    :items="ingreso.detalles"
+                    hide-actions
+                    class="elevation-1"
+                  >
+                    <template slot="items" slot-scope="props">
+                      <td class="justify-center layout px-0">
+                        <v-icon @click="eliminarDetalle(props.item)" class="icon">delete</v-icon>
+                      </td>
+                      <td>{{ props.item.nombre }}</td>
+                      <td>
+                        <v-text-field
+                          :readonly="soloLectura"
+                          type="number"
+                          :autofocus="focusDetalle"
+                          v-model="props.item.cantidad"
+                        ></v-text-field>
+                      </td>
+                      <td>
+                        <v-text-field
+                          :readonly="soloLectura"
+                          type="number"
+                          v-model="props.item.precio"
+                          @keyup.enter="nuevoDetalle()"
+                        ></v-text-field>
+                      </td>
+                      <td
+                        class="text-xs-right"
+                      >{{columnMoney(props.item.cantidad * props.item.precio)}}</td>
+                    </template>
+                    <template slot="no-data">
+                      <div class="text-xs-center">No hay artículos agregados al detalle.</div>
+                    </template>
+                  </v-data-table>
+                  <div v-if="ingreso.detalles.length > 0" style="margin:20px 5px">
+                    <tr>
+                      <td width="120px">
+                        <b>Total Parcial:</b>
+                      </td>
+                      <td class="text-xs-right">{{columnMoney(calcularTotal - calcularImpuesto)}}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <b>Total Impuesto:</b>
+                      </td>
+                      <td class="text-xs-right">{{columnMoney(calcularImpuesto)}}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <b>Total Neto:</b>
+                      </td>
+                      <td class="text-xs-right">{{columnMoney(calcularTotal)}}</td>
+                    </tr>
+                  </div>
+                </v-flex>
+              </v-layout>
             </v-card-text>
           </v-card>
         </template>
@@ -209,8 +211,8 @@ export default {
       headers: [
         { text: "Borrar", value: "borrar", sortable: false },
         { text: "Artículo", value: "nombre", sortable: false },
-        { text: "Cantidad", value: "cantidad", sortable: false },
-        { text: "Precio", value: "precio", sortable: false },
+        { text: "Cantidad", value: "cantidad", sortable: false, width: "15%" },
+        { text: "Precio", value: "precio", sortable: false, width: "15%" },
         { text: "Subtotal", value: "subtotal", sortable: false }
       ],
       ingreso: {
@@ -245,7 +247,7 @@ export default {
         message: null,
         color: "info",
         icon: ""
-      },
+      }
     };
   },
   methods: {
@@ -420,4 +422,13 @@ export default {
 </script>
 
 <style scoped>
+.icon:hover {
+  color: #ff5252;
+}
+.icon {
+  color: grey;
+}
+.column {
+  margin: 0 20px;
+}
 </style>

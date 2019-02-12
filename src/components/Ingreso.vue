@@ -4,7 +4,7 @@
       <v-card>
         <v-toolbar flat color="white">
           <v-toolbar-title>Ingresos</v-toolbar-title>
-          <v-divider class="mx-2" inset vertical></v-divider>
+          <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-text-field
             class="text-xs-center"
@@ -30,15 +30,13 @@
               <v-icon
                 @click="$router.push({path: '/ingresos/' + props.item.id, append: true})"
                 title="ver detalle"
-                class="icon"
+                class="icon mx-2"
               >visibility</v-icon>
               <template v-if="props.item.estado == 'Aceptado'">
-                <v-icon
-                  @click="anular(props.item)"
-                  title="anular"
-                  @mouseover="e => e.target.classList.toggle('indigo--text')"
-                  @mouseleave="e => e.target.classList.remove('indigo--text')"
-                >block</v-icon>
+                <v-icon @click="mostrarDialog(props.item.id)" title="anular" class="icon">block</v-icon>
+              </template>
+              <template v-else>
+                <span >Anulado</span>
               </template>
             </td>
             <td>{{ props.item.nombreUsuario }}</td>
@@ -48,9 +46,9 @@
             <td>{{ columnDate(props.item.fechaHora) }}</td>
             <td>{{ columnIva(props.item.impuesto) }}</td>
             <td class="text-xs-right">{{ columnMoney(props.item.total) }}</td>
-            <td
+            <!--<td
               :class="{'indigo--text':props.item.estado == 'Aceptado', 'red--text':props.item.estado !== 'Aceptado'}"
-            >{{ props.item.estado == 'Aceptado' ? 'Aceptado' : props.item.estado }}</td>
+            >{{ props.item.estado == 'Aceptado' ? 'Aceptado' : props.item.estado }}</td>-->
           </template>
 
           <template slot="no-data">
@@ -73,6 +71,40 @@
         </v-data-table>
       </v-card>
     </v-flex>
+
+      <v-dialog
+      v-model="dialog"
+      max-width="390"
+    >
+      <v-card>
+        <v-card-title class="headline">Anular ingreso</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          Tras anular un ingreso se actualizarán los stocks de los artículos relacionados a dicho ingreso.
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="error darken-1"
+            flat="flat"
+            @click="cerrarDialog()"
+          >
+            Cancelar
+          </v-btn>
+
+          <v-btn
+            color="info darken-1"
+            flat="flat"
+            @click="anular()"
+          >
+            Confirmar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-btn
       fixed
       dark
@@ -112,7 +144,7 @@ export default {
         { text: "Fecha", value: "fechaHora" },
         { text: "Impuesto", value: "impuesto", sortable: false },
         { text: "Total", value: "total", sortable: false },
-        { text: "Estado", value: "estado", sortable: false }
+        //{ text: "Estado", value: "estado", sortable: false }
       ],
       snackbar: {
         visible: false,
@@ -121,10 +153,13 @@ export default {
         icon: ""
       },
       timer: null,
-      rowsPerPageItems: [10, 20, 30],
+      rowsPerPageItems: [5, 10, 25],
       pagination: {
-        rowsPerPage: 10
-      }
+        rowsPerPage: 5
+      },
+      dialog: false,
+      idAnular: null,
+      anulando: false,
     };
   },
   methods: {
@@ -154,14 +189,17 @@ export default {
         this.listar();
       }, 800);
     },
-    anular(item) {
+    anular() {
+      this.anulando = true;
       this.$http
-        .put(`${process.env.VUE_APP_ROOT_API}ingresos/anular/${item.id}`)
+        .put(`${process.env.VUE_APP_ROOT_API}ingresos/anular/${this.idAnular}`)
         .then(() => {
           this.snackbar.icon = "info";
           this.snackbar.color = "success";
           this.snackbar.message = "Ingreso anulado";
           this.snackbar.visible = true;
+          this.anulando = false;
+          this.cerrarDialog();
           this.listar();
         })
         .catch(error => {
@@ -169,7 +207,17 @@ export default {
           this.snackbar.color = "error";
           this.snackbar.message = "Ocurrió un error, revise su conexión.";
           this.snackbar.visible = true;
+          this.anulando = false;
+          this.idAnular = null;
         });
+    },
+    mostrarDialog(id){
+      this.dialog = true;
+      this.idAnular = id
+    },
+    cerrarDialog(){
+      this.dialog = false;
+      this.idAnular = null;
     }
   },
   computed: {},
@@ -183,7 +231,7 @@ export default {
 </script>
 <style scoped>
 .icon:hover {
-  color: indigo;
+  color: #1976d2;
 }
 .icon {
   color: grey;
