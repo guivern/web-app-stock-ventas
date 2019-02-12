@@ -119,6 +119,7 @@
                           type="number"
                           :autofocus="focusDetalle"
                           v-model="props.item.cantidad"
+                          :error-messages="mensajeValidacion['Detalles[0].Cantidad']"
                         ></v-text-field>
                       </td>
                       <td>
@@ -127,6 +128,7 @@
                           type="number"
                           v-model="props.item.precio"
                           @keyup.enter="nuevoDetalle()"
+                          :error-messages="mensajeValidacion['Detalles[0].Precio']"
                         ></v-text-field>
                       </td>
                       <td

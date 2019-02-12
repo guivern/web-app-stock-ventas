@@ -30,13 +30,13 @@
               <v-icon
                 @click="$router.push({path: '/ingresos/' + props.item.id, append: true})"
                 title="ver detalle"
-                class="icon mx-2"
+                class="icon mx-1"
               >visibility</v-icon>
               <template v-if="props.item.estado == 'Aceptado'">
                 <v-icon @click="mostrarDialog(props.item.id)" title="anular" class="icon">block</v-icon>
               </template>
               <template v-else>
-                <span >Anulado</span>
+                <span>Anulado</span>
               </template>
             </td>
             <td>{{ props.item.nombreUsuario }}</td>
@@ -72,35 +72,17 @@
       </v-card>
     </v-flex>
 
-      <v-dialog
-      v-model="dialog"
-      max-width="390"
-    >
+    <v-dialog v-model="dialog" max-width="420">
       <v-card>
-        <v-card-title class="headline">Anular ingreso</v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          Tras anular un ingreso se actualizarán los stocks de los artículos relacionados a dicho ingreso.
-        </v-card-text>
+        <v-toolbar color="teal" flat dark dense extense><v-toolbar-title> Anular ingreso <v-icon>warning</v-icon> </v-toolbar-title></v-toolbar>
+        <v-card-text>Esto provocará una actualización de stock, dejando sin efecto el ingreso.</v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn
-            color="error darken-1"
-            flat="flat"
-            @click="cerrarDialog()"
-          >
-            Cancelar
-          </v-btn>
+          <v-btn flat color="error" @click="cerrarDialog()">Cancelar</v-btn>
 
-          <v-btn
-            color="info darken-1"
-            flat="flat"
-            @click="anular()"
-          >
-            Confirmar
-          </v-btn>
+          <v-btn color="info" @click="anular()">Confirmar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -136,14 +118,14 @@ export default {
       getError: false,
       search: "",
       headers: [
-        { text: "Opciones", value: "opciones", sortable: false },
+        { text: "Opciones", value: "opciones", sortable: false, width: "14%" },
         { text: "Usuario", value: "nombreUsuario" },
         { text: "Proveedor", value: "nombreProveedor" },
         { text: "Tipo Comprobante", value: "tipoComprobante" },
         { text: "Nro. Comprobante", value: "nroComprobante", sortable: false },
         { text: "Fecha", value: "fechaHora" },
         { text: "Impuesto", value: "impuesto", sortable: false },
-        { text: "Total", value: "total", sortable: false },
+        { text: "Total", value: "total", sortable: false, width: "15%" }
         //{ text: "Estado", value: "estado", sortable: false }
       ],
       snackbar: {
@@ -159,7 +141,7 @@ export default {
       },
       dialog: false,
       idAnular: null,
-      anulando: false,
+      anulando: false
     };
   },
   methods: {
@@ -211,11 +193,11 @@ export default {
           this.idAnular = null;
         });
     },
-    mostrarDialog(id){
+    mostrarDialog(id) {
       this.dialog = true;
-      this.idAnular = id
+      this.idAnular = id;
     },
-    cerrarDialog(){
+    cerrarDialog() {
       this.dialog = false;
       this.idAnular = null;
     }
