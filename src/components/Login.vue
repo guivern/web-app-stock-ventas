@@ -1,5 +1,5 @@
 <template>
-  <v-layout align-center justify-center>
+  <v-layout align-start justify-center>
     <v-flex xs12 sm8 md6 lg4 x14>
       <v-card>
         <v-toolbar dark color="primary">
