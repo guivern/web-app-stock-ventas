@@ -119,7 +119,8 @@
                           type="number"
                           :autofocus="focusDetalle"
                           v-model="props.item.cantidad"
-                          :error-messages="mensajeValidacion['Detalles[0].Cantidad']"
+                          :error-messages="mensajeValidacion[`Detalles[${props.item.index}].Cantidad`]"
+                          @focus="delete mensajeValidacion[`Detalles[${props.item.index}].Cantidad`]"
                         ></v-text-field>
                       </td>
                       <td>
@@ -128,7 +129,8 @@
                           type="number"
                           v-model="props.item.precio"
                           @keyup.enter="nuevoDetalle()"
-                          :error-messages="mensajeValidacion['Detalles[0].Precio']"
+                          :error-messages="mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
+                          @focus="delete mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
                         ></v-text-field>
                       </td>
                       <td
@@ -163,28 +165,28 @@
               </v-layout>
             </v-card-text>
           </v-card>
+          <v-btn
+            v-if="!soloLectura"
+            fixed
+            dark
+            fab
+            bottom
+            right
+            type="button"
+            title="Guardar"
+            color="info"
+            @click="guardar"
+            :loading="guardando"
+          >
+            <v-icon>send</v-icon>
+          </v-btn>
         </template>
       </v-card>
     </v-flex>
     <v-snackbar :timeout="2000" v-model="snackbar.visible" :color="snackbar.color">
       {{snackbar.message}}
-      <v-icon>{{snackbar.icon}}</v-icon>
+      <v-icon class="ml-2">{{snackbar.icon}}</v-icon>
     </v-snackbar>
-    <v-btn
-      v-if="!soloLectura"
-      fixed
-      dark
-      fab
-      bottom
-      right
-      type="button"
-      title="Guardar"
-      color="info"
-      @click="guardar"
-      :loading="guardando"
-    >
-      <v-icon>send</v-icon>
-    </v-btn>
   </v-layout>
 </template>
 
@@ -337,7 +339,8 @@ export default {
         idArticulo: data["id"],
         nombre: data["nombre"],
         cantidad: null,
-        precio: null
+        precio: null,
+        index: (this.ingreso.detalles.length + 1) -1
       });
       this.focusDetalle = true;
     },
@@ -357,6 +360,8 @@ export default {
         this.ingreso.detalles = this.ingreso.detalles.filter(
           d => d.idArticulo != item.idArticulo
         );
+        delete this.mensajeValidacion[`Detalles[${item.index}].Cantidad`];
+        delete this.mensajeValidacion[`Detalles[${item.index}].Precio`];
       }
     },
     guardar() {
@@ -378,14 +383,17 @@ export default {
         })
         .catch(error => {
           this.guardando = false;
-          if (error.response.data.errors) {
-            this.mensajeValidacion = error.response.data.errors;
-          } else if (error.response.data.detallesError) {
-            this.snackbar.icon = "info";
-            this.snackbar.color = "error";
-            this.snackbar.message = error.response.data.detallesError;
-            this.snackbar.visible = true;
+          if (error.response) {
+            if (error.response.data.errors) {
+              this.mensajeValidacion = error.response.data.errors;
+            } else if (error.response.data.detallesError) {
+              this.snackbar.icon = "info";
+              this.snackbar.color = "error";
+              this.snackbar.message = error.response.data.detallesError;
+              this.snackbar.visible = true;
+            }
           } else {
+            this.snackbar.icon = "error";
             this.snackbar.color = "error";
             this.snackbar.message = "Ocurrió un error, revise su conexión.";
             this.snackbar.visible = true;

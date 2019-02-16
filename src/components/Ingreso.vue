@@ -49,6 +49,19 @@
             <!--<td
               :class="{'indigo--text':props.item.estado == 'Aceptado', 'red--text':props.item.estado !== 'Aceptado'}"
             >{{ props.item.estado == 'Aceptado' ? 'Aceptado' : props.item.estado }}</td>-->
+            <v-btn
+              fixed
+              dark
+              fab
+              bottom
+              right
+              type="button"
+              title="Nuevo"
+              color="info"
+              @click="$router.push({path: 'nuevo', append: true})"
+            >
+              <v-icon>add</v-icon>
+            </v-btn>
           </template>
 
           <template slot="no-data">
@@ -74,32 +87,22 @@
 
     <v-dialog v-model="dialog" max-width="420">
       <v-card>
-        <v-toolbar color="teal" flat dark dense extense><v-toolbar-title> Anular ingreso <v-icon>warning</v-icon> </v-toolbar-title></v-toolbar>
+        <v-toolbar color="secondary" flat dark dense extense>
+          <v-toolbar-title>Anular ingreso
+            <v-icon class="mx-2">warning</v-icon>
+          </v-toolbar-title>
+        </v-toolbar>
         <v-card-text>Esto provocará una actualización de stock, dejando sin efecto el ingreso.</v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn flat color="error" @click="cerrarDialog()">Cancelar</v-btn>
+          <v-btn round flat color="error" @click="cerrarDialog()">Cancelar</v-btn>
 
-          <v-btn color="info" @click="anular()">Confirmar</v-btn>
+          <v-btn round flat color="info" @click="anular()">Confirmar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-btn
-      fixed
-      dark
-      fab
-      bottom
-      right
-      type="button"
-      title="Nuevo"
-      color="info"
-      @click="$router.push({path: 'nuevo', append: true})"
-    >
-      <v-icon>add</v-icon>
-    </v-btn>
     <v-snackbar :timeout="2000" v-model="snackbar.visible" :color="snackbar.color">
       {{snackbar.message}}
       <v-icon>{{snackbar.icon}}</v-icon>
@@ -169,7 +172,7 @@ export default {
       }
       this.timer = setTimeout(() => {
         this.listar();
-      }, 800);
+      }, 800); // agrega delay luego de cada tipeo
     },
     anular() {
       this.anulando = true;
