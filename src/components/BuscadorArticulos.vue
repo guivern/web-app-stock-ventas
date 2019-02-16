@@ -1,7 +1,7 @@
 <template>
-  <v-dialog :value="value" @input="$emit('input')" max-width="950px">
+  <v-dialog :value="value" @input="$emit('input')" max-width="700px">
     <v-card>
-      <v-card-title class="headline">Seleccione un artículo</v-card-title>
+      <v-toolbar color="secondary" flat dark dense extense><v-toolbar-title> Selección de artículos </v-toolbar-title></v-toolbar>
       <v-card-text>
         <v-container grid-list-md>
           <v-layout wrap>
@@ -13,8 +13,7 @@
                   v-model="nombre"
                   autofocus
                   label="Buscar"
-                  @keyup.enter="buscarArticulos()"
-                  @keyup="limpiar()"
+                  @keyup="searchTimeOut()"
                 ></v-text-field>
                 <v-data-table
                   :headers="header"
@@ -28,7 +27,7 @@
                       <v-icon @click="agregar(props.item)">add</v-icon>
                     </td>
                     <td>{{ props.item.nombre }}</td>
-                    <td>{{ props.item.nombreCategoria }}</td>
+                    <!--<td>{{ props.item.nombreCategoria }}</td>-->
                     <td>{{ props.item.stock }}</td>
                     <td>{{ props.item.precioVenta }}</td>
                   </template>
@@ -43,7 +42,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="secondary" flat @click.native="cancelar">Cancelar</v-btn>
+        <v-btn color="secondary" flat @click.native="cancelar">Cerrar</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -57,7 +56,7 @@ export default {
       header: [
         { text: "Seleccionar", value: "seleccionar", sortable: false },
         { text: "Artículo", value: "nombre" },
-        { text: "Categoria", value: "nombreCategoria" },
+        //{ text: "Categoria", value: "nombreCategoria" },
         { text: "Stock", value: "stock", sortable: false },
         { text: "Precio Venta", value: "precioVenta", sortable: false }
       ],
@@ -66,7 +65,8 @@ export default {
       nombre: null,
       cargando: false,
       getOk: false,
-      getError: false
+      getError: false,
+      timer: null
     };
   },
   methods: {
@@ -74,28 +74,42 @@ export default {
       this.cargando = true;
       this.getOk = false;
       this.getError = false;
-      this.$http
-        .get(
-          `${process.env.VUE_APP_ROOT_API}articulos/buscar?nombre=` +
-            this.nombre
-        )
-        .then(response => {
-          this.cargando = false;
-          this.getOk = true;
-          this.articulos = response.data;
-          console.log(response.data);
-        })
-        .catch(error => {
-          this.cargando = false;
-          this.getError = true;
-          console.log(response.data);
-        });
+      if (!this.nombre) {
+        this.articulos = [];
+        this.cargando = false;
+      } else {
+        this.$http
+          .get(
+            `${process.env.VUE_APP_ROOT_API}articulos/buscar?nombre=` +
+              this.nombre
+          )
+          .then(response => {
+            this.cargando = false;
+            this.getOk = true;
+            this.articulos = response.data;
+            console.log(response.data);
+          })
+          .catch(error => {
+            this.cargando = false;
+            this.getError = true;
+            console.log(response.data);
+          });
+      }
     },
     agregar(item) {
-      this.$emit("input");
+      //this.$emit("input");
       this.$emit("getArticulo", item);
-      this.nombre = null;
-      this.limpiar();
+      //this.nombre = null;
+      //this.limpiar();
+    },
+    searchTimeOut() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        this.buscarArticulos();
+      }, 800); // agrega delay luego de cada tipeo
     },
     cancelar() {
       this.$emit("input");
@@ -121,4 +135,7 @@ export default {
   }
 };
 </script>
+<style>
+
+</style>
 
