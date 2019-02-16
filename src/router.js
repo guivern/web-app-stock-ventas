@@ -124,7 +124,15 @@ var router = new Router({
           meta: { administrador: true, vendedor: true },
           props: { titulo: "Registro de Venta" }
         },
-        //{ path: ':id', component: IngresoForm, props: (route) => ({ id: parseInt(route.params.id), titulo: "Detalle de Ingreso" }), meta: { administrador: true, almacenero: true } }
+        {
+          path: ":id",
+          component: VentaForm,
+          props: route => ({
+            id: parseInt(route.params.id),
+            titulo: "Detalle de Venta"
+          }),
+          meta: { administrador: true, vendedor: true }
+        }
       ]
     },
 
