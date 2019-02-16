@@ -11,6 +11,8 @@ import Proveedor from "./components/Proveedor.vue";
 import Login from "./components/Login";
 import Ingreso from "./components/Ingreso.vue";
 import IngresoForm from "./components/IngresoForm.vue";
+import Venta from "./components/Venta.vue";
+import VentaForm from "./components/VentaForm.vue";
 
 Vue.use(Router);
 
@@ -45,23 +47,37 @@ var router = new Router({
         almacenero: true
       }
     },
-
     {
-      path: '/ingresos',
+      path: "/ingresos",
       component: {
         render(c) {
-          return c('router-view')
+          return c("router-view");
         }
       },
       children: [
-        { path: '', component: Ingreso, meta: { administrador: true, almacenero: true } },
-        { path: 'nuevo', component: IngresoForm, meta: { administrador: true, almacenero: true }, props:{titulo:"Ingreso de Artículos"} },
+        {
+          path: "",
+          component: Ingreso,
+          meta: { administrador: true, almacenero: true }
+        },
+        {
+          path: "nuevo",
+          component: IngresoForm,
+          meta: { administrador: true, almacenero: true },
+          props: { titulo: "Ingreso de Artículos" }
+        },
         //{ path: ':id', component: IngresoForm, meta: { administrador: true, almacenero: true } },
-        { path: ':id', component: IngresoForm, props: (route) => ({ id: parseInt(route.params.id), titulo: "Detalle de Ingreso" }), meta: { administrador: true, almacenero: true } }
-
-      ],
+        {
+          path: ":id",
+          component: IngresoForm,
+          props: route => ({
+            id: parseInt(route.params.id),
+            titulo: "Detalle de Ingreso"
+          }),
+          meta: { administrador: true, almacenero: true }
+        }
+      ]
     },
-
 
     {
       path: "/roles",
@@ -88,6 +104,30 @@ var router = new Router({
         vendedor: true
       }
     },
+
+    {
+      path: "/ventas",
+      component: {
+        render(c) {
+          return c("router-view");
+        }
+      },
+      children: [
+        {
+          path: "",
+          component: Venta,
+          meta: { administrador: true, vendedor: true }
+        },
+        {
+          path: "nuevo",
+          component: VentaForm,
+          meta: { administrador: true, vendedor: true },
+          props: { titulo: "Registro de Venta" }
+        },
+        //{ path: ':id', component: IngresoForm, props: (route) => ({ id: parseInt(route.params.id), titulo: "Detalle de Ingreso" }), meta: { administrador: true, almacenero: true } }
+      ]
+    },
+
     {
       path: "/proveedores",
       name: "proveedores",
