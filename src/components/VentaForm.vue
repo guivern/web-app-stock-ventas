@@ -113,7 +113,7 @@
                       <td class="justify-center layout px-0">
                         <v-icon @click="eliminarDetalle(props.item)" class="icon">delete</v-icon>
                       </td>
-                      <td>{{ props.item.nombre }}</td>
+                      <td>{{ props.item.nombreArticulo }}</td>
                       <td>
                         <v-text-field
                           :readonly="soloLectura"
@@ -122,7 +122,7 @@
                           v-model="props.item.cantidad"
                           @focusout="verificarStock(props.item)"
                           :loading="verificando"
-                          :hint="`${props.item.stock - props.item.cantidad} en stock`"
+                          :hint="id?'':`${props.item.stock - props.item.cantidad} en stock`"
                           :error-messages="mensajeValidacion[`Detalles[${props.item.index}].Cantidad`]"
                           @focus="delete mensajeValidacion[`Detalles[${props.item.index}].Cantidad`]"
                         ></v-text-field>
@@ -273,14 +273,13 @@ export default {
     };
   },
   methods: {
-    /*getVenta() {
+    getVenta() {
       this.cargando = true;
       this.getError = false;
       this.$http
-        .get(`${process.env.VUE_APP_ROOT_API}ingresos/` + this.id)
+        .get(`${process.env.VUE_APP_ROOT_API}ventas/` + this.id)
         .then(response => {
-          this.ingreso = response.data;
-          this.getDetalles();
+          this.venta = response.data;
         })
         .catch(error => {
           console.log(error);
@@ -288,19 +287,6 @@ export default {
           this.getError = true;
         });
     },
-    getDetalles() {
-      this.$http
-        .get(`${process.env.VUE_APP_ROOT_API}ingresos/detalle/` + this.id)
-        .then(response => {
-          this.ingreso.detalles = response.data;
-          this.getProveedores();
-        })
-        .catch(error => {
-          console.log(error);
-          this.cargando = false;
-          this.getError = true;
-        });
-    },*/
     getClientes() {
       this.getError = false;
       this.$http
@@ -462,7 +448,7 @@ export default {
   created() {
     console.log(this.id);
     if (this.id) {
-      //this.getIngreso();
+      this.getVenta();
     }
     this.getClientes();
   },
