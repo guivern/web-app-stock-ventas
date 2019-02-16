@@ -49,19 +49,6 @@
             <!--<td
               :class="{'indigo--text':props.item.estado == 'Aceptado', 'red--text':props.item.estado !== 'Aceptado'}"
             >{{ props.item.estado == 'Aceptado' ? 'Aceptado' : props.item.estado }}</td>-->
-            <v-btn
-              fixed
-              dark
-              fab
-              bottom
-              right
-              type="button"
-              title="Nuevo"
-              color="info"
-              @click="$router.push({path: 'nuevo', append: true})"
-            >
-              <v-icon>add</v-icon>
-            </v-btn>
           </template>
 
           <template slot="no-data">
@@ -83,6 +70,19 @@
           </template>
         </v-data-table>
       </v-card>
+      <v-btn
+        fixed
+        dark
+        fab
+        bottom
+        right
+        type="button"
+        title="Nuevo"
+        color="info"
+        @click="$router.push({path: 'nuevo', append: true})"
+      >
+        <v-icon>add</v-icon>
+      </v-btn>
     </v-flex>
 
     <v-dialog v-model="dialog" max-width="420">
