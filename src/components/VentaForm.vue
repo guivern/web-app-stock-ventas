@@ -10,9 +10,11 @@
             {{this.titulo}}
           </v-toolbar-title>
         </v-toolbar>
+
         <div v-if="cargando" class="text-xs-center" style="padding:50px">
           <v-progress-circular :size="50" color="info" indeterminate></v-progress-circular>
         </div>
+
         <div v-if="getError" class="text-xs-center" style="padding:50px">
           <v-alert
             :value="getError"
@@ -27,7 +29,10 @@
             <v-icon small>refresh</v-icon>
           </v-btn>
         </div>
+
+        <!-- ---------------------CONTENIDO PRINCIPAL--------------------- -->
         <template v-if="!cargando && !getError">
+          <!-- --------------------FORM REGISTRO VENTA-------------------- -->
           <v-card>
             <v-card-text>
               <v-layout row wrap>
@@ -99,6 +104,8 @@
               </v-layout>
             </v-card-text>
           </v-card>
+
+          <!-- -----------------------LISTA DETALLE----------------------- -->
           <v-card>
             <v-card-text>
               <v-layout row wrap class="mx-3">
@@ -132,7 +139,7 @@
                           :readonly="soloLectura"
                           type="number"
                           v-model="props.item.precio"
-                          :error-messages= "mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
+                          :error-messages="mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
                           @focus="delete mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
                           @keyup.enter="nuevoDetalle()"
                         ></v-text-field>
@@ -175,8 +182,26 @@
               </v-layout>
             </v-card-text>
           </v-card>
+
+          <!-- ------------------------COMPROBANTE------------------------ -->
+          <comprobante-venta v-model="comprobanteModal" :venta="venta"></comprobante-venta>
+
           <v-btn
-            v-if="!soloLectura"
+            v-if="soloLectura"
+            fixed
+            dark
+            fab
+            bottom
+            right
+            type="button"
+            title="Imprimir"
+            color="secondary"
+            @click="comprobanteModal = true"
+          >
+            <v-icon>print</v-icon>
+          </v-btn>
+          <v-btn
+            v-else
             fixed
             dark
             fab
@@ -204,9 +229,12 @@
 import columnasMixin from "../Mixins/columnasMixin.js";
 import usuarioMixin from "../Mixins/usuarioMixin.js";
 import BuscarArticulos from "./BuscadorArticulos";
+import ComprobanteVenta from "./ComprobanteVenta";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 export default {
   mixins: [columnasMixin, usuarioMixin],
-  components: { BuscarArticulos },
+  components: { BuscarArticulos, ComprobanteVenta },
   name: "venta-form",
   props: {
     id: {
@@ -269,7 +297,8 @@ export default {
         icon: ""
       },
       verificando: false,
-      errorStock: ""
+      errorStock: "",
+      comprobanteModal: false
     };
   },
   methods: {
@@ -358,7 +387,7 @@ export default {
         precio: null,
         descuento: 0,
         stock: data.stock,
-        index: (this.venta.detalles.length + 1) -1
+        index: this.venta.detalles.length + 1 - 1
       });
       this.focusDetalle = true;
     },
@@ -378,7 +407,6 @@ export default {
         );
         delete this.mensajeValidacion[`Detalles[${item.index}].Cantidad`];
         delete this.mensajeValidacion[`Detalles[${item.index}].Precio`];
-
       }
     },
     verificarStock(item) {
@@ -395,7 +423,8 @@ export default {
             this.snackbar.message = "La cantidad excede el stock";
             this.snackbar.visible = true;
             item.cantidad = null;
-            this.mensajeValidacion[`Detalles[${item.index}].Cantidad`] = "excede el stock";
+            this.mensajeValidacion[`Detalles[${item.index}].Cantidad`] =
+              "excede el stock";
           }
         });
     },
@@ -435,7 +464,7 @@ export default {
           }
         });
     },
-    getErrorDetalle(val){
+    getErrorDetalle(val) {
       console.log(val);
     },
     volver() {
