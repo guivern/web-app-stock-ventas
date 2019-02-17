@@ -2,8 +2,11 @@
   <v-layout align-start>
     <v-flex>
       <v-card>
-        <v-toolbar flat color="white">
+        <v-toolbar flat color="info" dark>
           <v-toolbar-title>Artículos</v-toolbar-title>
+          <v-btn flat fab @click="reporte()">
+            <v-icon>print</v-icon>
+          </v-btn>
           <v-divider class="mx-2" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-text-field
@@ -166,6 +169,8 @@
 </template>
 
 <script>
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 export default {
   data() {
     return {
@@ -219,6 +224,37 @@ export default {
     };
   },
   methods: {
+    reporte() {
+      var columns = [
+        { title: "Articulo", dataKey: "nombre" },
+        { title: "Codigo", dataKey: "codigo" },
+        { title: "Categoria", dataKey: "categoria" },
+        { title: "Stock", dataKey: "stock" },
+        { title: "Precio Venta", dataKey: "precio" }
+      ];
+      var rows = [];
+
+      this.articulos.forEach(function(x) {
+        rows.push({
+          nombre: x.nombre,
+          codigo: x.codigo,
+          categoria: x.nombreCategoria,
+          stock: x.stock,
+          precio: x.precioVenta
+        });
+      });
+
+      var doc = new jsPDF("p", "pt");
+      doc.autoTable(columns, rows, {
+        margin: { top: 50 },
+        columnStyles: {stock: {halign: 'right'}, precio: {halign: 'right'}},
+        addPageContent: function(data) {
+          doc.text("Lista de Articulos", 40, 30);
+        }
+      });
+      doc.save("articulos.pdf");
+    },
+
     listar() {
       this.cargando = true;
       this.getError = false;
