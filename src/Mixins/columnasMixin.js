@@ -19,11 +19,13 @@ export default {
       return dd + "/" + mm + "/" + yyyy + " " + date.toLocaleTimeString();
     },
     columnMoney(val) {
-      val = val.toFixed(0);
-      return new Intl.NumberFormat(["ban", "id"]).format(val) + ' Gs.';
+      if (val != null) {
+        return new Intl.NumberFormat(["ban", "id"]).format(val) + ' Gs.';
+      }
+      return null;
     },
 
-    columnIva(val){
+    columnIva(val) {
       return 'IVA ' + val + '%';
     }
   }

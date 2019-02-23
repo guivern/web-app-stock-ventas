@@ -10,9 +10,11 @@
             {{this.titulo}}
           </v-toolbar-title>
         </v-toolbar>
+
         <div v-if="cargando" class="text-xs-center" style="padding:50px">
           <v-progress-circular :size="50" color="info" indeterminate></v-progress-circular>
         </div>
+
         <div v-if="getError" class="text-xs-center" style="padding:50px">
           <v-alert
             :value="getError"
@@ -27,7 +29,10 @@
             <v-icon small>refresh</v-icon>
           </v-btn>
         </div>
+
+        <!-- ---------------------CONTENIDO PRINCIPAL--------------------- -->
         <template v-if="!cargando && !getError">
+          <!-- --------------------FORM REGISTRO VENTA-------------------- -->
           <v-card>
             <v-card-text>
               <v-layout row wrap>
@@ -99,6 +104,8 @@
               </v-layout>
             </v-card-text>
           </v-card>
+
+          <!-- -----------------------LISTA DETALLE----------------------- -->
           <v-card>
             <v-card-text>
               <v-layout row wrap class="mx-3">
@@ -132,7 +139,7 @@
                           :readonly="soloLectura"
                           type="number"
                           v-model="props.item.precio"
-                          :error-messages= "mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
+                          :error-messages="mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
                           @focus="delete mensajeValidacion[`Detalles[${props.item.index}].Precio`]"
                           @keyup.enter="nuevoDetalle()"
                         ></v-text-field>
@@ -175,8 +182,26 @@
               </v-layout>
             </v-card-text>
           </v-card>
+
+          <!-- ------------------------COMPROBANTE------------------------ -->
+          <comprobante-venta v-model="comprobanteModal" :venta="venta"></comprobante-venta>
+
           <v-btn
-            v-if="!soloLectura"
+            v-if="soloLectura"
+            fixed
+            dark
+            fab
+            bottom
+            right
+            type="button"
+            title="Imprimir"
+            color="secondary"
+            @click="comprobanteModal = true"
+          >
+            <v-icon>print</v-icon>
+          </v-btn>
+          <v-btn
+            v-else
             fixed
             dark
             fab
@@ -204,9 +229,10 @@
 import columnasMixin from "../Mixins/columnasMixin.js";
 import usuarioMixin from "../Mixins/usuarioMixin.js";
 import BuscarArticulos from "./BuscadorArticulos";
+import ComprobanteVenta from "./ComprobanteVenta";
 export default {
   mixins: [columnasMixin, usuarioMixin],
-  components: { BuscarArticulos },
+  components: { BuscarArticulos, ComprobanteVenta },
   name: "venta-form",
   props: {
     id: {
@@ -269,7 +295,8 @@ export default {
         icon: ""
       },
       verificando: false,
-      errorStock: ""
+      errorStock: "",
+      comprobanteModal: false
     };
   },
   methods: {
@@ -280,6 +307,7 @@ export default {
         .get(`${process.env.VUE_APP_ROOT_API}ventas/` + this.id)
         .then(response => {
           this.venta = response.data;
+          this.getNroDocumento();
         })
         .catch(error => {
           console.log(error);
@@ -295,6 +323,20 @@ export default {
           this.clientes = response.data;
           //concatenamos nombre y apellido
           this.clientes.forEach(c => (c.nombre = c.nombre + " " + c.apellido));
+          this.cargando = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.cargando = false;
+          this.getError = true;
+        });
+    },
+    getNroDocumento() {
+      console.log(this.venta);
+      this.$http
+        .get(`${process.env.VUE_APP_ROOT_API}clientes/` + this.venta.idCliente)
+        .then(response => {
+          this.venta.nroDocumentoCliente = response.data.numeroDocumento;
           this.cargando = false;
         })
         .catch(error => {
@@ -353,12 +395,12 @@ export default {
       // sino, se agrega al detalle
       this.venta.detalles.push({
         idArticulo: data.id,
-        nombre: data.nombre,
+        nombreArticulo: data.nombre,
         cantidad: null,
         precio: null,
         descuento: 0,
         stock: data.stock,
-        index: (this.venta.detalles.length + 1) -1
+        index: this.venta.detalles.length + 1 - 1
       });
       this.focusDetalle = true;
     },
@@ -378,7 +420,6 @@ export default {
         );
         delete this.mensajeValidacion[`Detalles[${item.index}].Cantidad`];
         delete this.mensajeValidacion[`Detalles[${item.index}].Precio`];
-
       }
     },
     verificarStock(item) {
@@ -395,7 +436,8 @@ export default {
             this.snackbar.message = "La cantidad excede el stock";
             this.snackbar.visible = true;
             item.cantidad = null;
-            this.mensajeValidacion[`Detalles[${item.index}].Cantidad`] = "excede el stock";
+            this.mensajeValidacion[`Detalles[${item.index}].Cantidad`] =
+              "excede el stock";
           }
         });
     },
@@ -412,9 +454,11 @@ export default {
           this.snackbar.color = "success";
           this.snackbar.message = "Registro exitoso";
           this.snackbar.visible = true;
-          setTimeout(() => {
+          /*setTimeout(() => {
             this.volver();
-          }, 2000);
+          }, 2000);*/
+
+          this.$router.push({ path: "/ventas/" + response.data.id });
         })
         .catch(error => {
           this.guardando = false;
@@ -435,7 +479,7 @@ export default {
           }
         });
     },
-    getErrorDetalle(val){
+    getErrorDetalle(val) {
       console.log(val);
     },
     volver() {
@@ -451,6 +495,11 @@ export default {
       this.getVenta();
     }
     this.getClientes();
+  },
+  watch: {
+    "$route.params.id"(newId, oldId) {
+      this.getVenta(newId);
+    }
   },
   computed: {
     calcularTotal() {
