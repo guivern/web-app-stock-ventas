@@ -230,8 +230,6 @@ import columnasMixin from "../Mixins/columnasMixin.js";
 import usuarioMixin from "../Mixins/usuarioMixin.js";
 import BuscarArticulos from "./BuscadorArticulos";
 import ComprobanteVenta from "./ComprobanteVenta";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 export default {
   mixins: [columnasMixin, usuarioMixin],
   components: { BuscarArticulos, ComprobanteVenta },
@@ -309,6 +307,7 @@ export default {
         .get(`${process.env.VUE_APP_ROOT_API}ventas/` + this.id)
         .then(response => {
           this.venta = response.data;
+          this.getNroDocumento();
         })
         .catch(error => {
           console.log(error);
@@ -324,6 +323,20 @@ export default {
           this.clientes = response.data;
           //concatenamos nombre y apellido
           this.clientes.forEach(c => (c.nombre = c.nombre + " " + c.apellido));
+          this.cargando = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.cargando = false;
+          this.getError = true;
+        });
+    },
+    getNroDocumento() {
+      console.log(this.venta);
+      this.$http
+        .get(`${process.env.VUE_APP_ROOT_API}clientes/` + this.venta.idCliente)
+        .then(response => {
+          this.venta.nroDocumentoCliente = response.data.numeroDocumento;
           this.cargando = false;
         })
         .catch(error => {
@@ -382,7 +395,7 @@ export default {
       // sino, se agrega al detalle
       this.venta.detalles.push({
         idArticulo: data.id,
-        nombre: data.nombre,
+        nombreArticulo: data.nombre,
         cantidad: null,
         precio: null,
         descuento: 0,
@@ -441,9 +454,11 @@ export default {
           this.snackbar.color = "success";
           this.snackbar.message = "Registro exitoso";
           this.snackbar.visible = true;
-          setTimeout(() => {
+          /*setTimeout(() => {
             this.volver();
-          }, 2000);
+          }, 2000);*/
+
+          this.$router.push({ path: "/ventas/" + response.data.id });
         })
         .catch(error => {
           this.guardando = false;
@@ -480,6 +495,11 @@ export default {
       this.getVenta();
     }
     this.getClientes();
+  },
+  watch: {
+    "$route.params.id"(newId, oldId) {
+      this.getVenta(newId);
+    }
   },
   computed: {
     calcularTotal() {

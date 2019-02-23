@@ -2,7 +2,7 @@
   <v-dialog :value="value" @input="$emit('input')" max-width="1000px">
     <v-card>
       <v-toolbar color="secondary" flat dark dense extense>
-        <v-toolbar-title>Vista previa</v-toolbar-title>
+        <v-toolbar-title> Vista previa </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <div id="factura">
@@ -18,8 +18,8 @@
               <p id="encabezado">
                 <b>Company Name</b>
                 <br>Mcal. Lopez 1368 c/ Sen. Long - Asuncion, Paraguay
-                <br>Telefono:(+51)931742904
-                <br>Email:info.company@gmail.com
+                <br>Telefonos: 021-488-899 / (+595) 981-300-250
+                <br>Email: company@info.com.py
               </p>
             </div>
             <div id="fact">
@@ -31,7 +31,7 @@
                 {{columnDate(venta.fechaHora)}}
                 <br>
                 <b>Usuario:</b>
-                jperez
+                {{venta.nombreUsuario}}
               </p>
             </div>
           </header>
@@ -42,17 +42,17 @@
                 <tbody>
                   <tr>
                     <td id="cliente">
-                      <strong>Cliente:</strong>
+                      <strong>Cliente: </strong>
                       {{venta.nombreCliente}}
                       <br>
-                      <!--<strong>Documento:</strong> 47715777-0-->
+                      <strong>Ruc: </strong> {{venta.nroDocumentoCliente}}
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </section>
-          <br>
+          
           <section>
             <div>
               <table id="facarticulo">
@@ -76,34 +76,30 @@
                     >{{columnMoney(calcularSubtotal(detalle)) }}</td>
                   </tr>
                 </tbody>
-                <tfoot>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th style="text-align:right;">Sub-Total</th>
-                    <th style="text-align:right;">{{columnMoney(calcularTotal()-calcularImpuesto())}}</th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th style="text-align:right;">IVA</th>
-                    <th style="text-align:right;">{{columnMoney(calcularImpuesto())}}</th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th style="text-align:right;">Total</th>
-                    <th style="text-align:right;">{{columnMoney(calcularTotal())}}</th>
-                  </tr>
-                </tfoot>
               </table>
+              <div id="totales">
+                    <tr>
+                      <td width="120px">
+                        <b>Total Parcial:</b>
+                      </td>
+                      <td class="text-xs-right">{{columnMoney(calcularTotal() - calcularImpuesto())}}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <b>Total Impuesto:</b>
+                      </td>
+                      <td class="text-xs-right">{{columnMoney(calcularImpuesto())}}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <b>Total Neto:</b>
+                      </td>
+                      <td class="text-xs-right">{{columnMoney(calcularTotal())}}</td>
+                    </tr>
+                  </div>
             </div>
           </section>
-          <br>
-          <br>
+          <br><br><br>
           <footer>
             <div id="gracias">
               <p>
@@ -118,8 +114,8 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="secondary" flat @click.native="cerrar">Cancelar</v-btn>
-        <v-btn color="primary" flat>
-          <v-icon small>print</v-icon>Imprimir
+        <v-btn color="primary" flat @click="crearPDF">
+          Descargar
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -127,6 +123,8 @@
 </template>
 <script>
 import columnasMixin from "../Mixins/columnasMixin.js";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 export default {
   mixins: [columnasMixin],
   name: "ComprobanteVenta",
@@ -142,6 +140,21 @@ export default {
     return {};
   },
   methods: {
+    crearPDF(){
+      var quotes = document.getElementById("factura");
+      html2canvas(quotes).then(function(canvas){
+        var imgData = canvas.toDataURL('image/png');
+        var imgWidth = 210;
+        var pageHeight = 295;
+        var imgHeight = canvas.height * imgWidth / canvas.width;
+        var heightLeft = imgHeight;
+        var doc = new jsPDF('p','mm','a4');
+        var position = 0
+
+        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        doc.save('comprobante-venta.pdf');
+      });
+    },
     calcularSubtotal(detalle) {
       return detalle.cantidad * detalle.precio - detalle.descuento;
     },
@@ -238,4 +251,9 @@ section {
 #gracias {
   text-align: center;
 }
+
+#totales{
+  float: right;
+}
+
 </style>

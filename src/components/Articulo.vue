@@ -24,7 +24,8 @@
             <v-card>
               <v-toolbar flat dark class="info">
                 <v-toolbar-title>
-                  <span class="headline">{{ formTitle() }}</span>
+                  <span class="headline">
+                  {{ formTitle() }}</span>
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
@@ -82,10 +83,9 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn flat color="error" @click="close" round :disabled="guardando">Cancelar</v-btn>
+                <v-btn color="secondary" @click="close" flat :disabled="guardando">Cancelar</v-btn>
                 <v-btn
                   flat
-                  round
                   color="primary"
                   @click="guardar"
                   :loading="guardando"

@@ -88,8 +88,9 @@
     <v-dialog v-model="dialog" max-width="420">
       <v-card>
         <v-toolbar color="secondary" flat dark dense extense>
-          <v-toolbar-title>Anular ingreso
-            <v-icon class="mx-2">warning</v-icon>
+          <v-toolbar-title>
+            <v-icon class="mx-1">warning</v-icon>
+            Anular ingreso
           </v-toolbar-title>
         </v-toolbar>
         <v-card-text>Esto provocará una actualización de stock, dejando sin efecto el ingreso.</v-card-text>
@@ -97,9 +98,9 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn round flat color="error" @click="cerrarDialog()">Cancelar</v-btn>
+          <v-btn flat color="error" @click="cerrarDialog()">Cancelar</v-btn>
 
-          <v-btn round flat color="info" @click="anular()">Confirmar</v-btn>
+          <v-btn flat color="primary" @click="anular()">Confirmar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
