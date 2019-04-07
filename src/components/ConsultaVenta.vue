@@ -3,44 +3,27 @@
     <v-flex>
       <v-card>
         <v-toolbar flat color="info" dark>
-          <v-toolbar-title>Ventas</v-toolbar-title>
+          <v-toolbar-title>Consulta Ventas</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
+          <v-spacer></v-spacer>
+          Desde:<v-spacer></v-spacer>
+          <v-text-field
+            type="date"
+            class="text-xs-center"
+            v-model="fechaInicio"
+            append-icon="date_range"
+          ></v-text-field>
+          <v-spacer></v-spacer>
+          Hasta:<v-spacer></v-spacer>
+          <v-text-field
+            type="date"
+            class="text-xs-center"
+            v-model="fechaFin"
+            append-icon="date_range"
+          ></v-text-field>
+          <v-spacer></v-spacer>
+          <v-btn @click="listar" outline>Buscar<v-icon class="ml-2">search</v-icon> </v-btn>
         </v-toolbar>
-        <div>
-          <v-layout row wrap>
-            <v-flex xs12 md6>
-              <v-text-field
-                class="ml-4"
-                v-model="search"
-                prepend-icon="search"
-                label="Búsqueda"
-                @keyup="searchTimeOut()"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex xs12 md3>
-              <v-text-field
-                class="ml-4"
-                type="date"
-                label="Fecha Desde"
-                v-model="fechaInicio"
-                prepend-icon="date_range"
-                @input="listar"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs12 md3>
-              <v-text-field
-                class="ml-4"
-                type="date"
-                label="Fecha Hasta"
-                v-model="fechaFin"
-                prepend-icon="date_range"
-                @input="listar"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </div>
         <v-data-table
           :headers="headers"
           :items="ventas"
@@ -54,13 +37,8 @@
               <v-icon
                 @click="$router.push({path: '/ventas/' + props.item.id, append: true})"
                 title="ver detalle"
+                class="icon mx-1"
               >visibility</v-icon>
-              <template v-if="props.item.estado == 'Aceptado'">
-                <v-icon @click="mostrarDialog(props.item.id)" title="anular" class="icon">block</v-icon>
-              </template>
-              <template v-else>
-                <span>Anulado</span>
-              </template>
             </td>
             <td>{{ props.item.nombreUsuario }}</td>
             <td>{{ props.item.nombreCliente }}</td>
@@ -69,9 +47,6 @@
             <td>{{ columnDate(props.item.fechaHora) }}</td>
             <td>{{ columnIva(props.item.impuesto) }}</td>
             <td class="text-xs-right">{{ columnMoney(props.item.total) }}</td>
-            <!--<td
-              :class="{'indigo--text':props.item.estado == 'Aceptado', 'red--text':props.item.estado !== 'Aceptado'}"
-            >{{ props.item.estado == 'Aceptado' ? 'Aceptado' : props.item.estado }}</td>-->
           </template>
 
           <template slot="no-data">
@@ -108,24 +83,6 @@
         <v-icon>add</v-icon>
       </v-btn>
     </v-flex>
-    <v-dialog v-model="dialog" max-width="420">
-      <v-card>
-        <v-toolbar color="secondary" flat dark dense extense>
-          <v-toolbar-title>
-            <v-icon class="mr-1">warning</v-icon>Anular venta
-          </v-toolbar-title>
-        </v-toolbar>
-        <v-card-text>Esto provocará una actualización de stock</v-card-text>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn flat color="error" @click="cerrarDialog()">Cancelar</v-btn>
-
-          <v-btn flat color="primary" @click="anular()">Confirmar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
     <v-snackbar :timeout="2000" v-model="snackbar.visible" :color="snackbar.color">
       {{snackbar.message}}
       <v-icon>{{snackbar.icon}}</v-icon>
@@ -142,16 +99,16 @@ export default {
       ventas: [],
       cargando: false,
       getError: false,
-      search: null,
+      search: "",
       headers: [
-        { text: "Opciones", value: "opciones", sortable: false },
+        { text: "Opciones", value: "opciones", sortable: false, width: "14%" },
         { text: "Usuario", value: "nombreUsuario" },
         { text: "Cliente", value: "nombreCliente" },
         { text: "Tipo Comprobante", value: "tipoComprobante" },
         { text: "Nro. Comprobante", value: "nroComprobante", sortable: false },
         { text: "Fecha", value: "fechaHora" },
         { text: "Impuesto", value: "impuesto", sortable: false },
-        { text: "Total", value: "total", sortable: false }
+        { text: "Total", value: "total", sortable: false, width: "15%" }
         //{ text: "Estado", value: "estado", sortable: false }
       ],
       snackbar: {
@@ -174,35 +131,7 @@ export default {
   },
   methods: {
     listar() {
-      var url = "ventas";
-      if (
-        this.search != null &&
-        this.fechaInicio != null &&
-        this.fechaFin != null
-      ) {
-        url +=
-          "/search?filtro=" +
-          this.search +
-          "&fechaInicio=" +
-          this.fechaInicio +
-          "&fechaFin=" +
-          this.fechaFin;
-      } else if (
-        this.search == null &&
-        this.fechaInicio != null &&
-        this.fechaFin != null
-      ) {
-        url +=
-          "/search?fechaInicio=" +
-          this.fechaInicio +
-          "&fechaFin=" +
-          this.fechaFin;
-      } else if (
-        this.search != null &&
-        (this.fechaInicio == null || this.fechaFin == null)
-      ) {
-        url += "/search?filtro=" + this.search;
-      }
+      var url = "ventas" + (this.fechaInicio && this.fechaFin ? "/consulta?fechaInicio=" + this.fechaInicio + "&fechaFin=" + this.fechaFin : "");
       this.cargando = true;
       this.getError = false;
       this.$http
