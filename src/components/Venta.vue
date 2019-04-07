@@ -115,7 +115,7 @@
             <v-icon class="mr-1">warning</v-icon>Anular venta
           </v-toolbar-title>
         </v-toolbar>
-        <v-card-text>Esto provocará una actualización de stock.</v-card-text>
+        <v-card-text>Esto provocará una actualización de stock</v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
