@@ -108,7 +108,6 @@
         <v-icon>add</v-icon>
       </v-btn>
     </v-flex>
-
     <v-dialog v-model="dialog" max-width="420">
       <v-card>
         <v-toolbar color="secondary" flat dark dense extense>
