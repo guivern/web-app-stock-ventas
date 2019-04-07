@@ -7,8 +7,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    token: null,
-    usuario: null
+    token: localStorage.getItem("stockVentasToken")?localStorage.getItem("stockVentasToken"):null,
+    usuario: localStorage.getItem("stockVentasToken")?decode(localStorage.getItem("stockVentasToken")):null
   },
   mutations: {
     // logica para cambiar de estado
@@ -25,20 +25,21 @@ export default new Vuex.Store({
       //almacena el token del usuario logeado
       commit("setToken", token)
       commit("setUsuario", decode(token))
-      localStorage.setItem("token", token)
+      localStorage.setItem("stockVentasToken", token)
     },
     autoLogin({commit}) {
-      let token = localStorage.getItem("token")
+      let token = localStorage.getItem("stockVentasToken")
       if (token) {
         commit("setToken", token)
         commit("setUsuario", decode(token))
       }
-      router.push({ name: 'home' })
+      //router.push({ name: 'home' })
+      //router.forward();
     },
     salir({commit}) {
       commit("setToken", null)
       commit("setUsuario", null)
-      localStorage.removeItem("token")
+      localStorage.removeItem("stockVentasToken")
       router.push({name: 'login'})
     }
   }

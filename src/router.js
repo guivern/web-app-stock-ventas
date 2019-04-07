@@ -13,7 +13,7 @@ import Ingreso from "./components/Ingreso.vue";
 import IngresoForm from "./components/IngresoForm.vue";
 import Venta from "./components/Venta.vue";
 import VentaForm from "./components/VentaForm.vue";
-
+import ConsultaVenta from "./components/ConsultaVenta.vue"
 Vue.use(Router);
 
 var router = new Router({
@@ -137,6 +137,37 @@ var router = new Router({
     },
 
     {
+      path: "/consultaVentas",
+      component: {
+        render(c) {
+          return c("router-view");
+        }
+      },
+      children: [
+        {
+          path: "",
+          component: ConsultaVenta,
+          meta: { administrador: true }
+        },
+        {
+          path: "nuevo",
+          component: ConsultaVenta,
+          meta: { administrador: true },
+          props: { titulo: "Registro de Venta" }
+        },
+        {
+          path: ":id",
+          component: ConsultaVenta,
+          props: route => ({
+            id: parseInt(route.params.id),
+            titulo: "Detalle de Venta"
+          }),
+          meta: { administrador: true }
+        }
+      ]
+    },
+
+    {
       path: "/proveedores",
       name: "proveedores",
       component: Proveedor,
@@ -155,31 +186,37 @@ var router = new Router({
     }
   ]
 });
-
-// validacion de acceso
+// control de accesos
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.libre)) {
-    next();
-  } else if (
-    store.state.usuario &&
-    store.state.usuario.rol == "Administrador"
-  ) {
-    if (to.matched.some(record => record.meta.administrador)) {
-      next();
-    }
-  } else if (store.state.usuario && store.state.usuario.rol == "Almacenero") {
-    if (to.matched.some(record => record.meta.almacenero)) {
-      next();
-    }
-  } else if (store.state.usuario && store.state.usuario.rol == "Vendedor") {
-    if (to.matched.some(record => record.meta.vendedor)) {
-      next();
+  if (!to.meta.libre) {
+    const authUser = window.localStorage.getItem("stockVentasToken");
+    if (!authUser) {
+      // no esta autenticado
+      next({ name: "login" });
+    } else {
+      if (
+        to.matched.some(record => record.meta.administrador) &&
+        store.state.usuario.rol == "Administrador"
+      ) {
+        next();
+      } else if (
+        to.matched.some(record => record.meta.almacenero) &&
+        store.state.usuario.rol == "Almacenero"
+      ) {
+        next();
+      } else if (
+        to.matched.some(record => record.meta.vendedor) &&
+        store.state.usuario.rol == "Vendedor"
+      ) {
+        next();
+      }
     }
   } else {
-    next({
-      name: "login"
-    });
+    next();
   }
 });
+
+
+
 
 export default router;
