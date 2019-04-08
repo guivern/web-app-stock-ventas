@@ -8,7 +8,7 @@
         </v-toolbar>
         <div>
           <v-layout row wrap>
-            <v-flex xs12 md6>
+            <v-flex xs8 md6>
               <v-text-field
                 class="ml-4"
                 v-model="search"
@@ -19,7 +19,7 @@
             </v-flex>
           </v-layout>
           <v-layout row wrap>
-            <v-flex xs12 md3>
+            <v-flex xs8 md3>
               <v-text-field
                 class="ml-4"
                 type="date"
@@ -29,7 +29,7 @@
                 @input="listar"
               ></v-text-field>
             </v-flex>
-            <v-flex xs12 md3>
+            <v-flex xs8 md3>
               <v-text-field
                 class="ml-4"
                 type="date"
