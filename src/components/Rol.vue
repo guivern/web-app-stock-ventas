@@ -1,7 +1,7 @@
 <template>
   <v-layout align-start>
     <v-flex>
-      <v-toolbar flat color="white">
+      <v-toolbar flat color="info" dark>
         <v-toolbar-title>Roles</v-toolbar-title>
         <v-divider class="mx-2" inset vertical></v-divider>
         <v-spacer></v-spacer>
