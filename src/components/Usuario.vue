@@ -1,7 +1,7 @@
 <template>
   <v-layout align-start>
     <v-flex>
-      <v-toolbar flat color="white">
+      <v-toolbar flat color="info" dark>
         <v-toolbar-title>Usuarios</v-toolbar-title>
         <v-divider class="mx-2" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -16,7 +16,7 @@
         <v-spacer></v-spacer>
 
         <v-dialog v-model="dialog" max-width="500px">
-          <v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn>
+          <!-- <v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn> -->
           <v-card>
             <v-toolbar flat dark class="info">
               <v-toolbar-title>
@@ -147,6 +147,19 @@
         </template>
       </v-data-table>
     </v-flex>
+    <v-btn
+      fixed
+      dark
+      fab
+      bottom
+      right
+      type="button"
+      title="Nuevo"
+      color="info"
+      @click="dialog = true"
+    >
+      <v-icon>add</v-icon>
+    </v-btn>
     <v-snackbar
       :timeout="1500"
       bottom

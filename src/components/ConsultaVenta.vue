@@ -69,19 +69,6 @@
           </template>
         </v-data-table>
       </v-card>
-      <v-btn
-        fixed
-        dark
-        fab
-        bottom
-        right
-        type="button"
-        title="Nuevo"
-        color="info"
-        @click="$router.push({path: 'nuevo', append: true})"
-      >
-        <v-icon>add</v-icon>
-      </v-btn>
     </v-flex>
     <v-snackbar :timeout="2000" v-model="snackbar.visible" :color="snackbar.color">
       {{snackbar.message}}
