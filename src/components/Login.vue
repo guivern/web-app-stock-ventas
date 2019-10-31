@@ -1,7 +1,7 @@
 <template>
   <v-layout align-start justify-center>
     <v-flex xs12 sm8 md6 lg4 x14>
-      <v-card>
+      <v-card @keyup.enter.native="ingresar">
         <v-toolbar dark color="primary">
           <v-toolbar-title>Login</v-toolbar-title>
         </v-toolbar>
