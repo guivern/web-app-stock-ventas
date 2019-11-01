@@ -17,7 +17,8 @@ import ConsultaVenta from "./components/ConsultaVenta.vue"
 Vue.use(Router);
 
 var router = new Router({
-  base: process.env.BASE_URL,
+  base: process.env.NODE_ENV === 'production' ? '/stock/' : '/',
+  mode: 'history',
   routes: [
     {
       path: "/",
