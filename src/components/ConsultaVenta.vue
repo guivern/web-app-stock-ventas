@@ -4,26 +4,34 @@
       <v-card>
         <v-toolbar flat color="info" dark>
           <v-toolbar-title>Consulta Ventas</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          Desde:<v-spacer></v-spacer>
-          <v-text-field
-            type="date"
-            class="text-xs-center"
-            v-model="fechaInicio"
-            append-icon="date_range"
-          ></v-text-field>
-          <v-spacer></v-spacer>
-          Hasta:<v-spacer></v-spacer>
-          <v-text-field
-            type="date"
-            class="text-xs-center"
-            v-model="fechaFin"
-            append-icon="date_range"
-          ></v-text-field>
-          <v-spacer></v-spacer>
-          <v-btn @click="listar" outline>Buscar<v-icon class="ml-2">search</v-icon> </v-btn>
         </v-toolbar>
+
+        <v-layout row wrap>
+          <v-flex xs4 md4 class="ml-4">
+            <v-text-field
+              label="Fecha desde"
+              type="date"
+              class="text-xs-center"
+              v-model="fechaInicio"
+              
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs4 md4 class="ml-4">
+            <v-text-field
+              label="Fecha Hasta"
+              type="date"
+              class="text-xs-center"
+              v-model="fechaFin"
+              
+            ></v-text-field>
+            </v-flex>
+
+            <v-btn class="ml-4 accent" hide-details @click="listar">
+              <v-icon>search</v-icon>
+            </v-btn>
+          
+        </v-layout>
+
         <v-data-table
           :headers="headers"
           :items="ventas"
@@ -113,12 +121,19 @@ export default {
       idAnular: null,
       anulando: false,
       fechaInicio: null,
-      fechaFin: null,
+      fechaFin: null
     };
   },
   methods: {
     listar() {
-      var url = "ventas" + (this.fechaInicio && this.fechaFin ? "/consulta?fechaInicio=" + this.fechaInicio + "&fechaFin=" + this.fechaFin : "");
+      var url =
+        "ventas" +
+        (this.fechaInicio && this.fechaFin
+          ? "/consulta?fechaInicio=" +
+            this.fechaInicio +
+            "&fechaFin=" +
+            this.fechaFin
+          : "");
       this.cargando = true;
       this.getError = false;
       this.$http

@@ -27,13 +27,13 @@
           ></v-text-field>
 
           <v-flex xs12>
-            <v-btn dressed block color="primary" :loading="cargando" @click="ingresar">Ingresar</v-btn>
+            <v-btn dressed block color="primary" :loading="cargando1" @click="ingresar">Ingresar</v-btn>
           </v-flex>
           <v-flex xs12>
             <span>¿No tienes una cuenta?</span>
           </v-flex>
           <v-flex xs12>
-            <v-btn block outline color="primary" :loading="cargando" @click="invitado">Ingresar como Invitado</v-btn>
+            <v-btn block outline color="primary" :loading="cargando2" @click="invitado">Ingresar como Invitado</v-btn>
           </v-flex>
         </v-card-text>
       </v-container>
@@ -53,7 +53,8 @@ export default {
         username: null,
         password: null
       },
-      cargando: false,
+      cargando1: false,
+      cargando2: false,
       mensajeValidacion: [],
       snackbar: {
         visible: false,
@@ -64,16 +65,16 @@ export default {
   },
   methods: {
     ingresar() {
-      this.cargando = true;
+      this.cargando1 = true;
       this.$http
         .post(`${process.env.VUE_APP_ROOT_API}auth`, this.credenciales)
         .then(resp => {
-          this.cargando = false;
+          this.cargando1 = false;
           this.$store.dispatch("guardarToken", resp.data.token);
           this.$router.push({ name: "home" });
         })
         .catch(err => {
-          this.cargando = false;
+          this.cargando1 = false;
           if (err.response) {
             if (err.response.status == 400) {
               // errores de validacion
@@ -91,19 +92,19 @@ export default {
         });
     },
     invitado() {
-      this.cargando = true;
+      this.cargando2 = true;
       this.$http
         .post(`${process.env.VUE_APP_ROOT_API}auth`, {
           username: "jperez",
           password: "password"
         })
         .then(resp => {
-          this.cargando = false;
+          this.cargando2 = false;
           this.$store.dispatch("guardarToken", resp.data.token);
           this.$router.push({ name: "home" });
         })
         .catch(err => {
-          this.cargando = false;
+          this.cargando2 = false;
           if (err.response) {
             if (err.response.status == 400) {
               // errores de validacion

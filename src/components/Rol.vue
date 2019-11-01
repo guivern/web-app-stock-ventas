@@ -4,17 +4,6 @@
       <v-toolbar flat color="info" dark>
         <v-toolbar-title>Roles</v-toolbar-title>
         <v-divider class="mx-2" inset vertical></v-divider>
-        <v-spacer></v-spacer>
-        <v-text-field
-          class="text-xs-center"
-          v-model="search"
-          append-icon="search"
-          label="Búsqueda"
-          single-line
-          hide-details
-        ></v-text-field>
-        <v-spacer></v-spacer>
-        
       </v-toolbar>
       <v-data-table
         :headers="headers"

@@ -4,19 +4,22 @@
       <v-card>
         <v-toolbar flat color="info" dark>
           <v-toolbar-title>Ingresos</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-text-field
-            class="text-xs-center"
-            v-model="search"
-            append-icon="search"
-            label="Búsqueda"
-            single-line
-            hide-details
-            @keyup="searchTimeOut()"
-          ></v-text-field>
-          <v-spacer></v-spacer>
         </v-toolbar>
+
+        <v-layout row wrap>
+          <v-flex xs10 md4>
+            <v-text-field
+              class="text-xs-center ml-4"
+              v-model="search"
+              append-icon="search"
+              label="Búsqueda"
+              single-line
+              hide-details
+              @keyup="searchTimeOut()"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+
         <v-data-table
           :headers="headers"
           :items="ingresos"
@@ -30,7 +33,7 @@
               <v-icon
                 @click="$router.push({path: '/ingresos/' + props.item.id, append: true})"
                 title="ver detalle"
-                class="icon mx-1"
+                class="icon"
               >visibility</v-icon>
               <template v-if="props.item.estado == 'Aceptado'">
                 <v-icon @click="mostrarDialog(props.item.id)" title="anular" class="icon">block</v-icon>
@@ -62,7 +65,8 @@
                 type="error"
                 outline
               >Ocurrió un error al intentar obtener los datos, por favor verifique su conexión e intente nuevamente.</v-alert>
-              <v-btn color="info" title="recargar" @click="listar()">Reintentar
+              <v-btn color="info" title="recargar" @click="listar()">
+                Reintentar
                 <v-icon small>refresh</v-icon>
               </v-btn>
             </div>
@@ -89,8 +93,7 @@
       <v-card>
         <v-toolbar color="secondary" flat dark dense extense>
           <v-toolbar-title>
-            <v-icon class="mx-1">warning</v-icon>
-            Anular ingreso
+            <v-icon class="mx-1">warning</v-icon>Anular ingreso
           </v-toolbar-title>
         </v-toolbar>
         <v-card-text>Esto provocará una actualización de stock, dejando sin efecto el ingreso.</v-card-text>

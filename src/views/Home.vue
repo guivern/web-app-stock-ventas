@@ -2,23 +2,23 @@
   <v-container grid-list-m>
     <v-layout wrap>
       <v-flex xs12 sm12 md12>
+        <h2 class="text-xs-center">Gráfico de Ventas</h2>
         <div v-if="cargando" class="text-xs-center" style="padding:50px">
           <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
         </div>
-        <div v-if="getError" class="text-xs-center" style="padding:50px">
+        <div v-if="error" class="text-xs-center" style="padding:50px">
           <v-alert
-            :value="getError"
+            :value="error"
             transition="scale-transition"
             type="error"
             outline
-          >Ocurrió un error al intentar obtener los datos, por favor verifique su conexión e intente nuevamente.</v-alert>
-          <v-btn color="info" title="recargar">
+          >Ocurrió un error.</v-alert>
+          <v-btn color="info" title="recargar" @click="recargar">
             Reintentar
             <v-icon small>refresh</v-icon>
           </v-btn>
         </div>
-        <h1>Gráfico de Ventas</h1>
-        <template v-show="!cargando && !getError">
+        <template v-show="!cargando && !error">
           <div>
             <canvas id="myChart"></canvas>
           </div>
@@ -36,7 +36,7 @@ export default {
   data() {
     return {
       cargando: false,
-      getError: false,
+      error: false,
       dashboardValores: null,
       nombreMeses: [],
       totalMeses: [],
@@ -59,7 +59,7 @@ export default {
   methods: {
     getDatosDashboard() {
       this.cargando = true;
-      this.getError = false;
+      this.error = false;
       this.$http
         .get(`${process.env.VUE_APP_ROOT_API}ventas/dashboard`)
         .then(response => {
@@ -70,7 +70,7 @@ export default {
         .catch(error => {
           console.log(error);
           this.cargando = false;
-          this.getError = true;
+          this.error = true;
         });
     },
     cargarDashboard() {
@@ -89,17 +89,17 @@ export default {
               label: "Total ventas de los últimos meses",
               data: this.totalMeses,
               borderWidth: 1,
-               backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-                'rgba(127, 159, 50, 0.2)',
-                'rgba(80, 50, 70, 0.2)',
-                'rgba(78, 125, 250, 0.2)',
-            ],
+              backgroundColor: [
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+                "rgba(255, 206, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(153, 102, 255, 0.2)",
+                "rgba(255, 159, 64, 0.2)",
+                "rgba(127, 159, 50, 0.2)",
+                "rgba(80, 50, 70, 0.2)",
+                "rgba(78, 125, 250, 0.2)"
+              ]
             }
           ]
         },
@@ -119,6 +119,9 @@ export default {
         }
       });
     },
+    recargar() {
+      this.getDatosDashboard();
+    }
   },
   mounted() {
     this.getDatosDashboard();

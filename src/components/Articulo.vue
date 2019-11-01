@@ -4,97 +4,26 @@
       <v-card>
         <v-toolbar flat color="info" dark>
           <v-toolbar-title>Artículos</v-toolbar-title>
-          <v-btn flat fab @click="reporte()">
-            <v-icon>print</v-icon>
-          </v-btn>
-          <v-divider class="mx-2" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-text-field
-            class="text-xs-center"
-            v-model="search"
-            append-icon="search"
-            label="Búsqueda"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-spacer></v-spacer>
-
-          <v-dialog v-model="dialog" max-width="500px">
-            <!--<v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn>-->
-            <v-card>
-              <v-toolbar flat dark class="info">
-                <v-toolbar-title>
-                  <span class="headline">
-                  {{ formTitle() }}</span>
-                </v-toolbar-title>
-                <v-spacer></v-spacer>
-              </v-toolbar>
-              <v-divider></v-divider>
-              <v-card-text v-on:keyup.enter="guardar">
-                <v-container grid-list-md>
-                  <v-layout wrap>
-                    <v-flex xs6 sm6 md6>
-                      <v-text-field
-                        v-model="articulo.codigo"
-                        label="Código"
-                        :error-messages="mensajeValidacion['Codigo']"
-                      ></v-text-field>
-                    </v-flex>
-                    <v-flex xs6 sm6 md6>
-                      <v-select
-                        v-model="articulo.idCategoria"
-                        :items="categorias"
-                        item-text="nombre"
-                        item-value="id"
-                        label="Categoría"
-                        :loading="cargando"
-                        :error-messages="mensajeValidacion['IdCategoria']"
-                      ></v-select>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12>
-                      <v-text-field
-                        v-model="articulo.nombre"
-                        label="Nombre"
-                        :error-messages="mensajeValidacion['Nombre']"
-                      ></v-text-field>
-                    </v-flex>
-                    <v-flex xs6 sm6 md6>
-                      <v-text-field
-                        type="number"
-                        v-model="articulo.stock"
-                        label="Stock"
-                        :error-messages="mensajeValidacion['Stock']"
-                      ></v-text-field>
-                    </v-flex>
-                    <v-flex xs6 sm6 md6>
-                      <v-text-field
-                        type="number"
-                        v-model="articulo.precioVenta"
-                        label="Precio Venta"
-                        :error-messages="mensajeValidacion['PrecioVenta']"
-                      ></v-text-field>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12>
-                      <v-text-field v-model="articulo.descripcion" label="Descripción"></v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="secondary" @click="close" flat :disabled="guardando">Cancelar</v-btn>
-                <v-btn
-                  flat
-                  color="primary"
-                  @click="guardar"
-                  :loading="guardando"
-                  :disabled="guardando"
-                >Guardar</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-toolbar>
+
+        <v-layout row wrap>
+          <v-flex xs1>
+            <v-btn class="ml-1" flat fab @click="reporte()">
+              <v-icon>print</v-icon>
+            </v-btn>
+          </v-flex>  
+            <v-flex xs10 md4>
+            <v-text-field
+              class="text-xs-center ml-4"
+              v-model="search"
+              append-icon="search"
+              label="Búsqueda"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+
         <v-data-table
           :headers="headers"
           :items="articulos"
@@ -136,7 +65,8 @@
                 type="error"
                 outline
               >Ocurrió un error al intentar obtener los datos, por favor verifique su conexión e intente nuevamente.</v-alert>
-              <v-btn color="info" title="recargar" @click="listar()">Reintentar
+              <v-btn color="info" title="recargar" @click="listar()">
+                Reintentar
                 <v-icon small>refresh</v-icon>
               </v-btn>
             </div>
@@ -145,6 +75,82 @@
         </v-data-table>
       </v-card>
     </v-flex>
+
+    <v-dialog v-model="dialog" max-width="500px">
+      <!--<v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn>-->
+      <v-card>
+        <v-toolbar flat dark class="info">
+          <v-toolbar-title>
+            <span class="headline">{{ formTitle() }}</span>
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-divider></v-divider>
+        <v-card-text v-on:keyup.enter="guardar">
+          <v-container grid-list-md>
+            <v-layout wrap>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  v-model="articulo.codigo"
+                  label="Código"
+                  :error-messages="mensajeValidacion['Codigo']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-select
+                  v-model="articulo.idCategoria"
+                  :items="categorias"
+                  item-text="nombre"
+                  item-value="id"
+                  label="Categoría"
+                  :loading="cargando"
+                  :error-messages="mensajeValidacion['IdCategoria']"
+                ></v-select>
+              </v-flex>
+              <v-flex xs12 sm12 md12>
+                <v-text-field
+                  v-model="articulo.nombre"
+                  label="Nombre"
+                  :error-messages="mensajeValidacion['Nombre']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  type="number"
+                  v-model="articulo.stock"
+                  label="Stock"
+                  :error-messages="mensajeValidacion['Stock']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  type="number"
+                  v-model="articulo.precioVenta"
+                  label="Precio Venta"
+                  :error-messages="mensajeValidacion['PrecioVenta']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm12 md12>
+                <v-text-field v-model="articulo.descripcion" label="Descripción"></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="secondary" @click="close" flat :disabled="guardando">Cancelar</v-btn>
+          <v-btn
+            flat
+            color="primary"
+            @click="guardar"
+            :loading="guardando"
+            :disabled="guardando"
+          >Guardar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-btn
       fixed
       dark
@@ -247,7 +253,10 @@ export default {
       var doc = new jsPDF("p", "pt");
       doc.autoTable(columns, rows, {
         margin: { top: 50 },
-        columnStyles: {stock: {halign: 'right'}, precio: {halign: 'right'}},
+        columnStyles: {
+          stock: { halign: "right" },
+          precio: { halign: "right" }
+        },
         addPageContent: function(data) {
           doc.text("Lista de Articulos", 40, 30);
         }

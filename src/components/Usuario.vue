@@ -1,152 +1,158 @@
 <template>
   <v-layout align-start>
     <v-flex>
-      <v-toolbar flat color="info" dark>
-        <v-toolbar-title>Usuarios</v-toolbar-title>
-        <v-divider class="mx-2" inset vertical></v-divider>
-        <v-spacer></v-spacer>
-        <v-text-field
-          class="text-xs-center"
-          v-model="search"
-          append-icon="search"
-          label="Búsqueda"
-          single-line
-          hide-details
-        ></v-text-field>
-        <v-spacer></v-spacer>
+      <v-card>
+        <v-toolbar flat color="info" dark>
+          <v-toolbar-title>Usuarios</v-toolbar-title>
+        </v-toolbar>
 
-        <v-dialog v-model="dialog" max-width="500px">
-          <!-- <v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn> -->
-          <v-card>
-            <v-toolbar flat dark class="info">
-              <v-toolbar-title>
-                <span class="headline">{{ formTitle() }}</span>
-              </v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-divider></v-divider>
-            <v-card-text v-on:keyup.enter="guardar">
-              <v-container grid-list-md>
-                <v-layout wrap>
-                  <v-flex xs6 sm6 md6>
-                    <v-text-field
-                      v-model="usuario.username"
-                      label="Username"
-                      :error-messages="mensajeValidacion['Username']"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs6 sm6 md6>
-                    <v-select
-                      v-model="usuario.idRol"
-                      :items="roles"
-                      item-text="nombre"
-                      item-value="id"
-                      label="Rol"
-                      :loading="cargando"
-                      :error-messages="mensajeValidacion['IdRol']"
-                    ></v-select>
-                  </v-flex>
-                  <v-flex xs6 sm6 md6>
-                    <v-text-field
-                      v-model="usuario.nombre"
-                      label="Nombre"
-                      :error-messages="mensajeValidacion['Nombre']"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs6 sm6 md6>
-                    <v-text-field
-                      v-model="usuario.apellido"
-                      label="Apellido"
-                      :error-messages="mensajeValidacion['Apellido']"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs6 sm6 md6>
-                    <v-text-field
-                      type="password"
-                      v-model="usuario.password1"
-                      label="Password"
-                      :error-messages="mensajeValidacion['Password1']"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs6 sm6 md6>
-                    <v-text-field
-                      type="password"
-                      v-model="usuario.password2"
-                      label="Confirmar password"
-                      :error-messages="mensajeValidacion['Password2']"
-                    ></v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-alert
-                    v-show="matchError"
-                    outline
-                    transition="scale-transition"
-                    type="error">
-                    Los passwords no coinciden
-                  </v-alert>
-              </v-container>
-            </v-card-text>
+        <v-layout row wrap>
+          <v-flex xs10 md4>
+            <v-text-field
+              class="text-xs-center ml-4"
+              v-model="search"
+              append-icon="search"
+              label="Búsqueda"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn flat color="error" @click="close" round :disabled="guardando">Cancelar</v-btn>
-              <v-btn
-                flat
-                round
-                color="primary"
-                @click="guardar"
-                :loading="guardando"
-                :disabled="guardando"
-              >Guardar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-toolbar>
-      <v-data-table
-        :headers="headers"
-        :items="usuarios"
-        class="elevation-1"
-        :search="search"
-        :loading="cargando"
-      >
-        <template slot="items" slot-scope="props">
-          <td>
-            <v-icon @click="editItem(props.item)">edit</v-icon>
-            <template v-if="props.item.activo">
-              <v-icon color="info" @click="activarDesactivar(props.item)">toggle_off</v-icon>
-            </template>
-            <template v-else>
-              <v-icon @click="activarDesactivar(props.item)">toggle_on</v-icon>
-            </template>
-          </td>
-          <td>{{ props.item.username }}</td>
-          <td>{{ props.item.nombreRol }}</td>
-          <td>{{ props.item.nombre }}</td>
-          <td>{{ props.item.apellido }}</td>
-          <td
-            :class="{'indigo--text':props.item.activo, 'blue-grey--text':!props.item.activo}"
-          >{{ props.item.activo ? 'Activo' : 'Inactivo' }}</td>
-        </template>
+        <v-data-table
+          :headers="headers"
+          :items="usuarios"
+          class="elevation-1"
+          :search="search"
+          :loading="cargando"
+        >
+          <template slot="items" slot-scope="props">
+            <td>
+              <v-icon @click="editItem(props.item)">edit</v-icon>
+              <template v-if="props.item.activo">
+                <v-icon color="info" @click="activarDesactivar(props.item)">toggle_off</v-icon>
+              </template>
+              <template v-else>
+                <v-icon @click="activarDesactivar(props.item)">toggle_on</v-icon>
+              </template>
+            </td>
+            <td>{{ props.item.username }}</td>
+            <td>{{ props.item.nombreRol }}</td>
+            <td>{{ props.item.nombre }}</td>
+            <td>{{ props.item.apellido }}</td>
+            <td
+              :class="{'indigo--text':props.item.activo, 'blue-grey--text':!props.item.activo}"
+            >{{ props.item.activo ? 'Activo' : 'Inactivo' }}</td>
+          </template>
 
-        <template slot="no-data">
-          <div v-if="cargando" class="text-xs-center">
-            <p>Cargando...</p>
-          </div>
-          <div v-else-if="getError" class="text-xs-center">
+          <template slot="no-data">
+            <div v-if="cargando" class="text-xs-center">
+              <p>Cargando...</p>
+            </div>
+            <div v-else-if="getError" class="text-xs-center">
+              <v-alert
+                :value="getError"
+                transition="scale-transition"
+                type="error"
+                outline
+              >Ocurrió un error al intentar obtener los datos, por favor verifique su conexión e intente nuevamente.</v-alert>
+              <v-btn color="info" title="recargar" @click="listar()">
+                Reintentar
+                <v-icon small>refresh</v-icon>
+              </v-btn>
+            </div>
+            <div v-else class="text-xs-center">No se encontraron registros</div>
+          </template>
+        </v-data-table>
+      </v-card>
+    </v-flex>
+
+    <v-dialog v-model="dialog" max-width="500px">
+      <!-- <v-btn slot="activator" color="primary" class="mb-2" round>Nuevo</v-btn> -->
+      <v-card>
+        <v-toolbar flat dark class="info">
+          <v-toolbar-title>
+            <span class="headline">{{ formTitle() }}</span>
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-divider></v-divider>
+        <v-card-text v-on:keyup.enter="guardar">
+          <v-container grid-list-md>
+            <v-layout wrap>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  v-model="usuario.username"
+                  label="Username"
+                  :error-messages="mensajeValidacion['Username']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-select
+                  v-model="usuario.idRol"
+                  :items="roles"
+                  item-text="nombre"
+                  item-value="id"
+                  label="Rol"
+                  :loading="cargando"
+                  :error-messages="mensajeValidacion['IdRol']"
+                ></v-select>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  v-model="usuario.nombre"
+                  label="Nombre"
+                  :error-messages="mensajeValidacion['Nombre']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  v-model="usuario.apellido"
+                  label="Apellido"
+                  :error-messages="mensajeValidacion['Apellido']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  type="password"
+                  v-model="usuario.password1"
+                  label="Password"
+                  :error-messages="mensajeValidacion['Password1']"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6 sm6 md6>
+                <v-text-field
+                  type="password"
+                  v-model="usuario.password2"
+                  label="Confirmar password"
+                  :error-messages="mensajeValidacion['Password2']"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
             <v-alert
-              :value="getError"
+              v-show="matchError"
+              outline
               transition="scale-transition"
               type="error"
-              outline
-            >Ocurrió un error al intentar obtener los datos, por favor verifique su conexión e intente nuevamente.</v-alert>
-            <v-btn color="info" title="recargar" @click="listar()">Reintentar
-              <v-icon small>refresh</v-icon>
-            </v-btn>
-          </div>
-          <div v-else class="text-xs-center">No se encontraron registros</div>
-        </template>
-      </v-data-table>
-    </v-flex>
+            >Los passwords no coinciden</v-alert>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat color="error" @click="close" round :disabled="guardando">Cancelar</v-btn>
+          <v-btn
+            flat
+            round
+            color="primary"
+            @click="guardar"
+            :loading="guardando"
+            :disabled="guardando"
+          >Guardar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-btn
       fixed
       dark
